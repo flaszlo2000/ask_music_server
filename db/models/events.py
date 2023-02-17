@@ -25,7 +25,6 @@ class DBEvents(IDBModel, Base):
         self.note = "" if note is None else note
         self.alive = alive
 
-    # TODO: fix mypy error below
     id: Union[Column[UUID], UUID] = Column("id", Uuid, primary_key = True)
     name: Union[Column[str], str] = Column("name", String, nullable = False)
     password: Union[Column[str], str] = Column("password", String, nullable = False)

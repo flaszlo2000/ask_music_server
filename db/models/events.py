@@ -21,7 +21,7 @@ class DBEvents(IDBModel, Base):
     id: Union[Column[Uuid], UUID] = Column("id", Uuid, primary_key = True)
     name: Union[Column[str], str] = Column("name", String, nullable = False)
     password: Union[Column[str], str] = Column("password", String, nullable = False)
-    alive: Union[Column[Boolean], bool] = Column("alive", Boolean, default = False)
+    alive: Column[Boolean] = Column("alive", Boolean, default = False)
 
     def __str__(self) -> str:
         return f"{self.id}:{self.name}[{self.password}] - {self.alive} -"

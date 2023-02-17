@@ -1,8 +1,8 @@
-from typing import Optional
+from typing import List, Optional
 
 from db.models.events import DBEvents
 from db.singleton_handler import global_db_handler
-from pydantic_models.event import EventModelWithId
+from pydantic_models.event import EventModelFullDetail, EventModelWithId
 
 
 def ongoing_event() -> Optional[EventModelWithId]:
@@ -16,4 +16,16 @@ def ongoing_event() -> Optional[EventModelWithId]:
         if current_event is not None:
             result = EventModelWithId.convertFromOrm(current_event)
     
+    return result
+
+def get_all_event() -> List[EventModelFullDetail]:
+    db_handler = global_db_handler()
+    result: List[EventModelFullDetail] = list()
+
+    with db_handler.session() as session:
+        for orm_inst in session.query(DBEvents).all():
+            result.append(
+                EventModelFullDetail.convertFromOrm(orm_inst)
+            )
+
     return result

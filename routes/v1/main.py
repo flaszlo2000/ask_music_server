@@ -4,7 +4,7 @@ from uuid import UUID
 from fastapi import APIRouter, Path
 
 from pydantic_models.event import EventModelWithId
-from scripts.v1.get_ongoing_event import ongoing_event
+from scripts.v1.get_events import ongoing_event
 
 router = APIRouter()
 

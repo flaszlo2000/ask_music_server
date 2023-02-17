@@ -1,5 +1,6 @@
 from enum import Enum
 from os import getenv
+from pathlib import Path
 from typing import Any, List
 
 
@@ -10,6 +11,8 @@ class AllowedEnvKey(Enum):
     ALLOW_METHODS = "ALLOW_METHODS"
     ALLOW_HEADERS = "ALLOW_HEADERS"
 
+    ENV_FILE_PATH = "ENV_FILE_PATH" # this must be provided by the runner
+
 def get_env_data(env_key: AllowedEnvKey) -> Any:
     "Returns env data based on the provided key"
     # NOTE: to be able to get data from dotenv file too it must be loaded! 
@@ -19,4 +22,13 @@ def get_env_data(env_key: AllowedEnvKey) -> Any:
     return getenv(env_key.value)
 
 def get_cors_conf(env_key: AllowedEnvKey) -> List[str]:
+    "Returns cors data from .env file"
     return get_env_data(env_key).split()
+
+def get_env_file_path(env_key: AllowedEnvKey = AllowedEnvKey.ENV_FILE_PATH) -> Path:
+    dotenv_file_path = Path(get_env_data(env_key))
+
+    if not dotenv_file_path.exists():
+        raise AttributeError(".env file was not found!")
+
+    return dotenv_file_path

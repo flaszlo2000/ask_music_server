@@ -8,10 +8,10 @@ from db.main import DbHandler
 from db.singleton_handler import global_db_handler
 from routes import ROUTERS
 from scripts.shared.dotenv_data import (AllowedEnvKey, get_cors_conf,
-                                        get_env_data)
+                                        get_env_data, get_env_file_path)
 
 app = FastAPI()
-load_dotenv()
+load_dotenv(get_env_file_path())
 
 app.add_middleware(
     CORSMiddleware,

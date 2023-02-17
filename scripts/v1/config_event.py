@@ -20,6 +20,7 @@ def get_running_event_name(session: Session) -> Optional[str]:
     return running_event_name
 
 def config_event(updated_event_model: EventModelFullDetail) -> None:
+    "This makes every event updateable"
     db_handler = global_db_handler()
 
     with db_handler.session() as session:

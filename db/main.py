@@ -15,7 +15,6 @@ class BaseDbHandler(ABC):
     def session(self) -> Generator[Session, None, None]:...
 
 class DbHandler(BaseDbHandler):
-
     def __init__(self) -> None:
         super().__init__()
         self.engine: Engine = self.createEngine(
@@ -35,7 +34,7 @@ class DbHandler(BaseDbHandler):
         autoflush: bool = False,
         autocommit: bool = False
     ) -> sessionmaker:
-        return sessionmaker(bind = self.engine, autoflush = False, autocommit = False)
+        return sessionmaker(bind = self.engine, autoflush = autoflush, autocommit = autocommit)
 
     @contextmanager
     def session(self) -> Generator[Session, None, None]:
@@ -43,5 +42,4 @@ class DbHandler(BaseDbHandler):
 
         yield session
 
-        # session.expunge_all() # is this needed?
         session.close()

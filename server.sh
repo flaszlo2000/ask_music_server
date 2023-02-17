@@ -1,3 +1,3 @@
 #!/bin/bash
 
-gunicorn main:app --worker-class uvicorn.workers.UvicornWorker
+gunicorn main:app --workers $SERVICE_WORKERS --worker-class uvicorn.workers.UvicornWorker

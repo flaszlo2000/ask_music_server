@@ -37,7 +37,7 @@ def update_event_data(event_id: UUID):
     "Updates an event in the db based on the given *event_id*"
     ...
 
-@admin_router.get("/{event_id}/musics", response_model = List[Any]) # FIXME: type hint
-def get_requested_musics(event_id: UUID):
-    "Returns all the requested music from the db"
+@admin_router.get("/{event_id}/records", response_model = List[Any]) # FIXME: type hint
+def get_requested_records(event_id: UUID):
+    "Returns all the requested records from the db"
     ...

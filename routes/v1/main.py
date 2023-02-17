@@ -16,6 +16,6 @@ def get_ongoin_event():
 def try_to_login_to_event():
     return ""
 
-@router.post("/{event}/music_request")
-def send_music_request(event: UUID = Path(...)):
+@router.post("/{event}/record_request")
+def send_record_request(event: UUID = Path(...)):
     ...

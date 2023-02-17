@@ -7,6 +7,7 @@ from pydantic_models.event import EventModelFullDetail, EventModelWithPassword
 from pydantic_models.record import RecordModel
 from scripts.v1.add_new_event import new_event
 from scripts.v1.config_event import change_visibility_of
+from scripts.v1.config_record import change_record_state
 from scripts.v1.get_events import get_all_event
 from scripts.v1.get_records import get_all_records
 
@@ -35,11 +36,16 @@ def change_event_visibility(
     change_visibility_of(event_id, new_visibility)
 
 @admin_router.post("/{event_id}/update")
-def update_event_data(event_id: UUID):
+def update_event_data(event_id: UUID = Path(...)):
     "Updates an event in the db based on the given *event_id*"
     ...
 
 @admin_router.get("/{event_id}/records", response_model = List[RecordModel])
-def get_requested_records(event_id: UUID):
+def get_requested_records(event_id: UUID = Path(...)):
     "Returns all the requested records from the db"
     return get_all_records(event_id)
+
+@admin_router.post("/record/{record_id}")
+def finish_record(record_id: int = Path(...)):
+    "Sets a record's 'done' parameter to True"
+    change_record_state(record_id, new_state = True)

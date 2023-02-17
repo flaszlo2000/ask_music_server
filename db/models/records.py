@@ -19,7 +19,7 @@ class DBRecords(IDBModel, Base):
     ) -> None:
         super().__init__()
 
-        if id:
+        if id is not None:
             self.id = id
 
         self.f_event_id = f_event_id

@@ -1,0 +1,19 @@
+{
+    "name": "ask_music_server",
+    "version": "1.0.0",
+    "description": "",
+    "scripts": {
+        "build": "echo \"No build specified\" && exit 1",
+        "start": "./run.sh"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/flaszlo2000/ask_music_server.git"
+    },
+    "author": "",
+    "license": "ISC",
+    "bugs": {
+        "url": "https://github.com/flaszlo2000/ask_music_server/issues"
+    },
+    "homepage": "https://github.com/flaszlo2000/ask_music_server#readme"
+}

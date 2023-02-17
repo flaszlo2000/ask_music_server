@@ -1,11 +1,12 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Boolean, Column, String, Uuid
 
 from db.models.base import Base, IDBModel
 
 
-class DBEvents(Base, IDBModel):
+class DBEvents(IDBModel, Base):
     __tablename__: str = "events"
 
-    id = Column("id", Integer, primary_key = True)
+    uuid = Column("id", Uuid, primary_key = True)
     name = Column("name", String, nullable = False)
     password = Column("password", String, nullable = False)
+    alive = Column("alive", Boolean, default = False)

@@ -1,10 +1,11 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
 
 from pydantic import BaseModel
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import DeclarativeBaseNoMeta
 from typing_extensions import Protocol  # python3.7
 
-Base = declarative_base()
+
+class Base(DeclarativeBaseNoMeta):...
 
 
 class IDBModel(Protocol):

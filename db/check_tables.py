@@ -10,7 +10,6 @@ def check_tables_on(engine: Engine, metadata: MetaData = Base.metadata) -> None:
     tables_were_ok = True
 
     for table_name, table in metadata.tables.items():
-        print(table_name, table)
         if not inspector.has_table(table_name):
             tables_were_ok = False
             table.create(bind = engine)

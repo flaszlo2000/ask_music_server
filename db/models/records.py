@@ -35,4 +35,4 @@ class DBRecords(IDBModel, Base):
     event_id = relationship("DBEvents")
 
     def __str__(self) -> str:
-        return f"[{self.f_event_id}] - {self.done=} - {self.id}: {self.value} "
+        return f"[{self.f_event_id}] - {self.done} - {self.id}: {self.value} "

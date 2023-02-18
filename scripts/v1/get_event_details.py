@@ -1,4 +1,8 @@
+from http import HTTPStatus
 from typing import List, Optional
+from uuid import UUID
+
+from fastapi import HTTPException
 
 from db.models.events import DBEvents
 from db.singleton_handler import global_db_handler
@@ -27,5 +31,24 @@ def get_all_event() -> List[EventModelFullDetail]:
             result.append(
                 EventModelFullDetail.convertFromOrm(orm_inst)
             )
+
+    return result
+
+def is_correct_password_for_event(event_id: UUID, password: str) -> bool:
+    "Login for event"
+    result = False
+    db_handler = global_db_handler()
+
+    with db_handler.session() as session:
+        event_in_db = session \
+            .query(DBEvents) \
+            .filter(DBEvents.id == event_id) \
+            .filter(DBEvents.password == password) \
+            .first()
+
+        if event_in_db is None:
+            raise HTTPException(HTTPStatus.BAD_REQUEST, "Incorrect credentails!")
+
+        result = True
 
     return result

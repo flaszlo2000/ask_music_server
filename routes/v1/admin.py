@@ -8,7 +8,7 @@ from pydantic_models.record import RecordModel
 from scripts.v1.add_new_event import new_event
 from scripts.v1.config_event import config_event
 from scripts.v1.config_record import change_record_state
-from scripts.v1.get_events import get_all_event
+from scripts.v1.get_event_details import get_all_event
 from scripts.v1.get_records import get_all_records
 
 admin_router = APIRouter(prefix = "/admin", tags = ["admin"])
@@ -32,7 +32,7 @@ def update_event_data(updated_event_model: EventModelFullDetail = Body(...)):
     "Updates an event in the db based on the given updated event model"
     config_event(updated_event_model)
 
-@admin_router.get("/{event_id}/records", response_model = List[RecordModel])
+@admin_router.get("/records/{event_id}", response_model = List[RecordModel])
 def get_requested_records(event_id: UUID = Path(...)):
     "Returns all the requested records from the db"
     return get_all_records(event_id)

@@ -7,6 +7,7 @@ from fastapi import HTTPException
 from db.models.events import DBEvents
 from db.singleton_handler import global_db_handler
 from pydantic_models.event import EventModelFullDetail, EventModelWithId
+from scripts.shared.check_id_in_db import check_id_in_db
 
 
 def ongoing_event() -> Optional[EventModelWithId]:
@@ -23,6 +24,7 @@ def ongoing_event() -> Optional[EventModelWithId]:
     return result
 
 def get_all_event() -> List[EventModelFullDetail]:
+    "Returns all events from the db"
     db_handler = global_db_handler()
     result: List[EventModelFullDetail] = list()
 
@@ -50,5 +52,17 @@ def is_correct_password_for_event(event_id: UUID, password: str) -> bool:
             raise HTTPException(HTTPStatus.BAD_REQUEST, "Incorrect credentails!")
 
         result = True
+
+    return result
+
+def get_detailed_event(event_id: UUID = None) -> EventModelFullDetail:
+    "Returns a specific event fully detailed based on *event_id*"
+    result: EventModelFullDetail
+    db_handler = global_db_handler()
+
+    with db_handler.session() as session:
+        event_in_db = check_id_in_db(session, DBEvents, event_id)
+
+        result = EventModelFullDetail.convertFromOrm(event_in_db)
 
     return result

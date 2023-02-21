@@ -18,7 +18,7 @@ DATA_BACKUP_STRATEGIES: Final[List[Callable[[Session, Table], Iterable[IDBModel]
 ]
 
 def get_registered_tables(metadata: MetaData = Base.metadata) -> Iterable[Table]:
-   return metadata.sorted_tables
+    return metadata.sorted_tables
 
 def get_data_backup_strategy_index() -> int:
     env_strategy_index: str = get_env_data(AllowedEnvKey.DB_BACKUP_STRATEGY)

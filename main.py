@@ -29,5 +29,7 @@ def include_routers(routers: Iterable[APIRouter] = ROUTERS) -> None:
 @app.on_event("startup")
 def startup() -> None:
     "Initializes the server startup requirements"
-    global_db_handler(DbHandler())
+    global_db_handler(
+        DbHandler(AllowedEnvKey.DATABASE_URL)
+    )
     include_routers()

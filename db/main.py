@@ -15,10 +15,10 @@ class BaseDbHandler(ABC):
     def session(self) -> Generator[Session, None, None]:...
 
 class DbHandler(BaseDbHandler):
-    def __init__(self) -> None:
+    def __init__(self, db_url: AllowedEnvKey) -> None:
         super().__init__()
         self.engine: Engine = self.createEngine(
-            get_env_data(AllowedEnvKey.DATABASE_URL)
+            get_env_data(db_url)
         )
         check_tables_on(self.engine)
 

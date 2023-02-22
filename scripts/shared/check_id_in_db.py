@@ -24,7 +24,7 @@ def check_id_in_db(
     if inst_in_db is None:
         raise HTTPException(
             HTTPStatus.BAD_REQUEST,
-            "Issue with the given id"
+            "Issue with the given id!"
         )
     
     return inst_in_db

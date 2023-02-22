@@ -8,6 +8,7 @@ from pydantic_models.record import RecordModel
 from scripts.v1.add_new_event import new_event
 from scripts.v1.config_event import config_event, config_event_state
 from scripts.v1.config_record import change_record_state
+from scripts.v1.delete_event import delete_event as crud_delete_event
 from scripts.v1.get_event_details import (get_all_event,
                                           get_detailed_current_event,
                                           get_detailed_event)
@@ -47,6 +48,10 @@ def get_full_detailed_event(event_id: UUID = Path(...)):
 @admin_router.get("/detailed_current_event", response_model = EventModelFullDetail)
 def get_full_detailed_current_event():
     return get_detailed_current_event()
+
+@admin_router.delete("/delete_event/{event_id}")
+def delete_event(event_id: UUID = Path(...)):
+    crud_delete_event(event_id)
 
 @admin_router.get("/records/{event_id}", response_model = List[RecordModel])
 def get_requested_records(event_id: UUID = Path(...)):

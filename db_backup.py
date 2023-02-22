@@ -37,7 +37,6 @@ def get_data_backup_strategy_index() -> int:
     return strategy_index
 
 def main() -> None:
-    load_dotenv(get_env_file_path())
     strat_index = get_data_backup_strategy_index()
 
     postgres_db_handler = DbHandler(AllowedEnvKey.DATABASE_URL)
@@ -52,4 +51,5 @@ def main() -> None:
         sqlite_session.commit()
 
 if __name__ == "__main__":
+    load_dotenv(get_env_file_path())
     main()

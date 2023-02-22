@@ -1,4 +1,9 @@
 ## TODO
+- postgres db connection on default but if it fails then get backup from sqlite
+    - [x] script that capable to make backup from postgres
+    - [] detect postgres fail
+    - [] on postgres fail, try to restore it from sqlite, if it is not possible then switch to sqlite and send somekind of notification
+        - [] send notification 
 - send record request from admin to a event that is not ongoing
 - record blacklist
 - jwt login

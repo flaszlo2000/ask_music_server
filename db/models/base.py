@@ -11,6 +11,8 @@ class Base(DeclarativeBaseNoMeta):...
 class IDBModel(Protocol):
     __tablename__: str
 
+    id: Any
+
     if TYPE_CHECKING:
         def __init__(self, *args: List[Any], **kwargs: Dict[str, Any]) -> None:
             ...

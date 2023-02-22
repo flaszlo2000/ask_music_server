@@ -1,13 +1,15 @@
-from db.models.records import DBRecords
+from uuid import UUID
+
+from db.models.events import DBEvents
 from db.singleton_handler import global_db_handler
 from scripts.shared.check_id_in_db import check_id_in_db
 
 
-def change_record_state(record_id: int, *, new_state: bool) -> None:
+def delete_event(event_id: UUID) -> None:
     db_handler = global_db_handler()
 
     with db_handler.session() as session:
-        orm_record = check_id_in_db(session, DBRecords, record_id)
+        event_in_db = check_id_in_db(session, DBEvents, event_id)
 
-        orm_record.done = new_state
+        session.delete(event_in_db)
         session.commit()

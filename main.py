@@ -62,7 +62,7 @@ def shutdown() -> None:
     ws_connection_manager.stop_db_poll()
     db_poll_thread.join()
 
-@app.websocket("/ws/records") # TODO: admin
+@app.websocket("/ws/undone_records") # TODO: admin
 async def ws_records(websocket: WebSocket):
     await ws_connection_manager.connect(websocket)
 

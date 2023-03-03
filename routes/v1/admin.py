@@ -61,9 +61,14 @@ def get_full_detailed_current_event():
 def delete_event(event_id: UUID = Path(...)):
     crud_delete_event(event_id)
 
-@admin_router.get("/records/{event_id}", response_model = List[RecordModel])
+@admin_router.get("/records/{event_id}", response_model = List[RecordModel], deprecated = True)
 def get_requested_records(event_id: UUID = Path(...)):
-    "Returns all the requested records from the db"
+    """
+    Returns all the requested records from the db
+
+    .. deprecated:: 0.7
+       Use WebSocket connection instead
+    """
     return get_all_records(event_id)
 
 @admin_router.post("/finish_record/{record_id}")

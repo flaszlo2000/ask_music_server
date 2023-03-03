@@ -37,7 +37,10 @@ async def login_for_admin_token(form_data: OAuth2PasswordRequestForm = Depends()
         )
 
     access_token = create_access_token(
-        data = {"sub": form_data.username}
+        data = {
+            "sub": form_data.username,
+            "scopes": ["user", "admin"]
+        }
     )
 
     return Token(access_token = access_token)

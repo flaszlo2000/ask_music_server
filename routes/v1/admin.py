@@ -1,10 +1,12 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Path
+from fastapi import APIRouter, Body, Depends, Path, Security
+from fastapi.security import OAuth2PasswordRequestForm
 
 from pydantic_models.event import EventModelFullDetail, EventModelWithPassword
 from pydantic_models.record import RecordModel
+from scripts.dependencies import checked_token
 from scripts.v1.add_new_event import new_event
 from scripts.v1.config_event import config_event, config_event_state
 from scripts.v1.config_record import change_record_state
@@ -14,10 +16,14 @@ from scripts.v1.get_event_details import (get_all_event,
                                           get_detailed_event)
 from scripts.v1.get_records import get_all_records
 
-admin_router = APIRouter(prefix = "/admin", tags = ["admin"])
+base_admin_router = APIRouter(prefix = "/admin", tags = ["admin"])
+admin_router = APIRouter(dependencies = [
+        Security(checked_token, scopes = ["admin"])
+    ]
+)
 
-@admin_router.post("/login")
-def login():
+@base_admin_router.post("/token")
+def login_for_token(login_form: OAuth2PasswordRequestForm = Depends()):
     ...
 
 @admin_router.post("/add_event")

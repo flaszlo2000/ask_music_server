@@ -4,12 +4,14 @@ from threading import Thread
 from typing import Iterable
 
 from dotenv import load_dotenv
-from fastapi import APIRouter, FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import (APIRouter, FastAPI, Security, WebSocket,
+                     WebSocketDisconnect)
 from fastapi.middleware.cors import CORSMiddleware
 
 from db.main import DbHandler
 from db.singleton_handler import global_db_handler
 from routes import ROUTERS
+from scripts.dependencies import checked_token
 from scripts.shared.dotenv_data import (AllowedEnvKey, get_cors_conf,
                                         get_env_data, get_env_file_path)
 from scripts.shared.ws.connection_manager import WSConnectionManager
@@ -62,8 +64,8 @@ def shutdown() -> None:
     ws_connection_manager.stop_db_poll()
     db_poll_thread.join()
 
-@app.websocket("/ws/undone_records") # TODO: admin
-async def ws_records(websocket: WebSocket):
+@app.websocket("/ws/undone_records")
+async def ws_records(websocket: WebSocket, token: str = Security(checked_token, scopes = ["admin"])):
     await ws_connection_manager.connect(websocket)
 
     try:

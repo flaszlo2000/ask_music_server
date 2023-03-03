@@ -38,7 +38,6 @@ def get_all_event() -> List[EventModelFullDetail]:
 
 def is_correct_password_for_event(event_id: UUID, password: str) -> bool:
     "Login for event"
-    result = False
     db_handler = global_db_handler()
 
     with db_handler.session() as session:
@@ -49,11 +48,9 @@ def is_correct_password_for_event(event_id: UUID, password: str) -> bool:
             .first()
 
         if event_in_db is None:
-            raise HTTPException(HTTPStatus.BAD_REQUEST, "Incorrect credentails!")
+            return False
 
-        result = True
-
-    return result
+    return True
 
 def get_detailed_event(event_id: UUID) -> EventModelFullDetail:
     "Returns a specific event fully detailed based on *event_id*"

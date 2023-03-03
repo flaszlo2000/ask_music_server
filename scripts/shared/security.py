@@ -1,14 +1,17 @@
 from datetime import datetime, timedelta
 from typing import Any, Dict, Final, Optional
 
+from dotenv import load_dotenv
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 
 from db.models.admins import DBAdmins
 from db.singleton_handler import global_db_handler
-from scripts.shared.dotenv_data import AllowedEnvKey, get_env_data
+from scripts.shared.dotenv_data import (AllowedEnvKey, get_env_data,
+                                        get_env_file_path)
 
+load_dotenv(get_env_file_path())
 __DEFAULT_EXP_MINS: Final[int] = int(get_env_data(AllowedEnvKey.JWT_EXPIRE_MINS))
 __JWT_SECRET_KEY: Final[str] = get_env_data(AllowedEnvKey.JWT_SECRET_KEY)
 __JWT_ALGORITHM: Final[str] = get_env_data(AllowedEnvKey.JWT_ALGORITHM)

@@ -5,10 +5,11 @@ from fastapi import Depends, HTTPException
 from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose.exceptions import JWTError
 
+from scripts import __version__
 from scripts.shared.security import get_payload_from_token
 
 oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl = "v1/admin/token", scopes = {
+    tokenUrl = f"{__version__}/admin/token", scopes = {
         "user": "Normal user privilige, add records to current event",
         "admin": "Admin priviliges"
     }

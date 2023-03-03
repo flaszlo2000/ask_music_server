@@ -12,6 +12,7 @@ from routes.v1.main import router as v1_main_router
 v1_admin_router.include_router(admin_router)
 
 ALL_ROUTERS: Final[List[APIRouter]] = [
+    #! DONT FORGET TO CHANGE VERSION IN scripts/__init__.py, dependencies.py depends on it!
     v1_admin_router,
     v1_main_router,
     experimental_router

@@ -1,10 +1,17 @@
+from http import HTTPStatus
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Path
+from fastapi import (APIRouter, Body, Depends, HTTPException, Path, Security,
+                     WebSocket, WebSocketDisconnect)
+from fastapi.security import OAuth2PasswordRequestForm
 
 from pydantic_models.event import EventModelFullDetail, EventModelWithPassword
 from pydantic_models.record import RecordModel
+from scripts.dependencies import checked_token
+from scripts.shared.security import (Token, create_access_token,
+                                     is_admin_credentials_ok)
+from scripts.static import ws_connection_manager
 from scripts.v1.add_new_event import new_event
 from scripts.v1.config_event import config_event, config_event_state
 from scripts.v1.config_record import change_record_state
@@ -14,11 +21,29 @@ from scripts.v1.get_event_details import (get_all_event,
                                           get_detailed_event)
 from scripts.v1.get_records import get_all_records
 
-admin_router = APIRouter(prefix = "/admin", tags = ["admin"])
+base_admin_router = APIRouter(prefix = "/admin", tags = ["admin"])
+admin_router = APIRouter(dependencies = [
+        Security(checked_token, scopes = ["admin"])
+    ]
+)
 
-@admin_router.post("/login")
-def login():
-    ...
+@base_admin_router.post("/token")
+async def login_for_admin_token(form_data: OAuth2PasswordRequestForm = Depends()):
+    if not is_admin_credentials_ok(form_data.username, form_data.password):
+        raise HTTPException(
+            status_code = HTTPStatus.UNAUTHORIZED,
+            detail = "Incorrect username or password",
+            headers = {"WWW-Authenticate": "Bearer"},
+        )
+
+    access_token = create_access_token(
+        data = {
+            "sub": form_data.username,
+            "scopes": ["user", "admin"]
+        }
+    )
+
+    return Token(access_token = access_token)
 
 @admin_router.post("/add_event")
 def add_event(event_data: EventModelWithPassword = Body(...)):
@@ -53,12 +78,27 @@ def get_full_detailed_current_event():
 def delete_event(event_id: UUID = Path(...)):
     crud_delete_event(event_id)
 
-@admin_router.get("/records/{event_id}", response_model = List[RecordModel])
+@admin_router.get("/records/{event_id}", response_model = List[RecordModel], deprecated = True)
 def get_requested_records(event_id: UUID = Path(...)):
-    "Returns all the requested records from the db"
+    """
+    Returns all the requested records from the db
+
+    .. deprecated:: 0.7
+       Use WebSocket connection instead
+    """
     return get_all_records(event_id)
 
 @admin_router.post("/finish_record/{record_id}")
 def finish_record(record_id: int = Path(...)):
     "Sets a record's 'done' parameter to True"
     change_record_state(record_id, new_state = True)
+
+@admin_router.websocket("/ws/undone_records")
+async def ws_records(websocket: WebSocket):
+    await ws_connection_manager.connect(websocket)
+
+    try:
+        data = await websocket.receive_text()
+        print(data) # TODO remove this
+    except WebSocketDisconnect:
+        ws_connection_manager.disconnect(websocket)

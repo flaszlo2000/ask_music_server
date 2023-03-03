@@ -3,19 +3,17 @@ from signal import SIGINT, signal
 from threading import Thread
 from typing import Iterable
 
-from dotenv import load_dotenv
-from fastapi import APIRouter, FastAPI, WebSocket, WebSocketDisconnect
+from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from db.main import DbHandler
 from db.singleton_handler import global_db_handler
 from routes import ROUTERS
 from scripts.shared.dotenv_data import (AllowedEnvKey, get_cors_conf,
-                                        get_env_data, get_env_file_path)
-from scripts.shared.ws.connection_manager import WSConnectionManager
+                                        get_env_data)
+from scripts.static import ws_connection_manager
 
 app = FastAPI()
-load_dotenv(get_env_file_path())
 
 app.add_middleware(
     CORSMiddleware,
@@ -25,7 +23,6 @@ app.add_middleware(
     allow_headers = get_cors_conf(AllowedEnvKey.ALLOW_HEADERS)
 )
 
-ws_connection_manager = WSConnectionManager()
 pararell_event_loop: asyncio.AbstractEventLoop
 
 def run_db_watch():
@@ -61,13 +58,3 @@ def startup() -> None:
 def shutdown() -> None:
     ws_connection_manager.stop_db_poll()
     db_poll_thread.join()
-
-@app.websocket("/ws/records") # TODO: admin
-async def ws_records(websocket: WebSocket):
-    await ws_connection_manager.connect(websocket)
-
-    try:
-        data = await websocket.receive_text()
-        print(data) # TODO remove this
-    except WebSocketDisconnect:
-        ws_connection_manager.disconnect(websocket)

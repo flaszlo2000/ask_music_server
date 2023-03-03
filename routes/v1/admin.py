@@ -1,12 +1,14 @@
 from typing import List
 from uuid import UUID
 
-from fastapi import APIRouter, Body, Depends, Path, Security
+from fastapi import (APIRouter, Body, Depends, Path, Security, WebSocket,
+                     WebSocketDisconnect)
 from fastapi.security import OAuth2PasswordRequestForm
 
 from pydantic_models.event import EventModelFullDetail, EventModelWithPassword
 from pydantic_models.record import RecordModel
 from scripts.dependencies import checked_token
+from scripts.static import ws_connection_manager
 from scripts.v1.add_new_event import new_event
 from scripts.v1.config_event import config_event, config_event_state
 from scripts.v1.config_record import change_record_state
@@ -68,3 +70,13 @@ def get_requested_records(event_id: UUID = Path(...)):
 def finish_record(record_id: int = Path(...)):
     "Sets a record's 'done' parameter to True"
     change_record_state(record_id, new_state = True)
+
+@admin_router.websocket("/ws/undone_records")
+async def ws_records(websocket: WebSocket):
+    await ws_connection_manager.connect(websocket)
+
+    try:
+        data = await websocket.receive_text()
+        print(data) # TODO remove this
+    except WebSocketDisconnect:
+        ws_connection_manager.disconnect(websocket)

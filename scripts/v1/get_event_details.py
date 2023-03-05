@@ -10,7 +10,7 @@ from pydantic_models.event import EventModelFullDetail, EventModelWithId
 from scripts.shared.check_id_in_db import check_id_in_db
 
 
-def ongoing_event() -> Optional[EventModelWithId]:
+def active_event() -> Optional[EventModelWithId]:
     "Returns the currently active event"
     db_handler = global_db_handler()
     result: Optional[EventModelWithId] = None

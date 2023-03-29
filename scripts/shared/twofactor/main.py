@@ -4,6 +4,7 @@ from sqlalchemy import desc
 from db.models.app_config import DBAppConfig
 from db.singleton_handler import global_db_handler
 from scripts.shared.dotenv_data import AllowedEnvKey, get_env_data
+from scripts.shared.twofactor.code_handler import Code
 
 
 def get_2f_url() -> str:
@@ -27,5 +28,8 @@ def get_2f_url() -> str:
     
     return result_url
             
-def send_code_over_2f(code: str) -> requests.Response:
-    return requests.post(get_2f_url(), code)
+def send_code_over_2f(code: Code) -> requests.Response:
+    return requests.post(
+        get_2f_url(),
+        json = { "value1" : str(code) }
+    )

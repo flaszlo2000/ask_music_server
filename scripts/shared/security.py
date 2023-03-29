@@ -41,13 +41,18 @@ def is_admin_credentials_ok(username: str, password: str, *, maintainer: bool = 
     db_handler = global_db_handler()
 
     with db_handler.session() as session:
-        orm_inst = session \
+        orm_query = session \
             .query(DBAdmins.password) \
             .filter(DBAdmins.username == username) \
-            .filter(DBAdmins.is_maintainer == maintainer) \
-            .first()
+        
+        if maintainer:
+            # at this way, when this filter is separated, the maintainer can login either at admin and maintainer
+            # but if it were like .filter(DBAdmins.is_maintainer == maintainer), in the base query above
+            # then maintainer wouldn't be considered an admin.
+            orm_query = orm_query.filter(DBAdmins.is_maintainer == True)
+        
+        orm_inst = orm_query.first()
 
         if orm_inst is None: return False
-
 
     return pwd_context.verify(password, orm_inst[0])

@@ -17,7 +17,7 @@ oauth2_scheme = OAuth2PasswordBearer(
         "maintainer": "Handle admins"
     }
 )
-
+# TODO: add multiple OAuth2PasswordBearer objects to separate scopes, via this, Swagger will work again
 
 async def checked_token(
     security_scopes: SecurityScopes,

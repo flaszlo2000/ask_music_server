@@ -126,3 +126,10 @@ async def update_admin():
 @maintainer_router.delete("/admins/delete")
 async def delete_admin():
     ...
+
+@maintainer_router.put("/change_webhook_url")
+async def change_webhook_url(new_webhook_url: str = Body(...)):
+    #! DANGER: if the webhook url gets changed here but the updated url gets removed from the db 
+    #! in a way when no other left, then the url in the .env will be used again!
+    #! This could be a security risk.
+    ...

@@ -52,7 +52,11 @@ def startup() -> None:
         DbHandler(AllowedEnvKey.DATABASE_URL)
     )
     include_routers()
-    init_db_polling()    
+    init_db_polling()
+
+    # TODO: generate and store user access key in db
+    # it can be used in the JWT system to pass around an id
+    # therefore it's *user_random_id* won't be needed
 
 @app.on_event("shutdown")
 def shutdown() -> None:

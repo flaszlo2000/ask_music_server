@@ -20,7 +20,7 @@ def get_ongoin_event():
 @router.post("/event_login/{event_id}", response_model = Token)
 def try_to_login_to_event(
     event_id: UUID = Path(...),
-    user_random_id: str = Body(min_length = 6),
+    # user_random_id: str = Body(min_length = 6), # TODO: change this to startup generated access uuid4 token
     event_password: str = Body()
 ):
     if not is_correct_password_for_event(event_id, event_password):
@@ -32,7 +32,7 @@ def try_to_login_to_event(
 
     access_token = create_access_token(
         data = {
-            "sub": user_random_id,
+            "sub": "random_id_generated", # user_random_id #!
             "scopes": ["user"]
         }
     )

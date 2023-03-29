@@ -6,6 +6,7 @@ from fastapi.security import OAuth2PasswordBearer, SecurityScopes
 from jose.exceptions import JWTError
 
 from scripts import __version__
+from scripts.shared.http_exc import CONIFGS
 from scripts.shared.security import get_payload_from_token
 
 oauth2_scheme = OAuth2PasswordBearer(
@@ -21,9 +22,8 @@ async def checked_token(
     token: str = Depends(oauth2_scheme)
 ) -> str:
     credential_exc_conf: Dict[str, Any] = {
-        "status_code": HTTPStatus.UNAUTHORIZED,
+        **CONIFGS[HTTPStatus.UNAUTHORIZED],
         "detail": "Could not validate credentials",
-        "headers": {"WWW-Authenticate": "Bearer"},
     }
 
     if security_scopes.scopes:

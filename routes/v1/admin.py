@@ -2,13 +2,14 @@ from http import HTTPStatus
 from typing import List
 from uuid import UUID
 
-from fastapi import (APIRouter, Body, Depends, HTTPException, Path, Security,
-                     WebSocket, WebSocketDisconnect)
+from fastapi import (APIRouter, Body, Depends, Path, Security, WebSocket,
+                     WebSocketDisconnect)
 from fastapi.security import OAuth2PasswordRequestForm
 
 from pydantic_models.event import EventModelFullDetail, EventModelWithPassword
 from pydantic_models.record import RecordModel
 from scripts.dependencies import checked_token
+from scripts.shared.http_exc import get_http_exc_with_detail
 from scripts.shared.security import (Token, create_access_token,
                                      is_admin_credentials_ok)
 from scripts.static import ws_connection_manager
@@ -30,10 +31,9 @@ admin_router = APIRouter(dependencies = [
 @base_admin_router.post("/token")
 async def login_for_admin_token(form_data: OAuth2PasswordRequestForm = Depends()):
     if not is_admin_credentials_ok(form_data.username, form_data.password):
-        raise HTTPException(
-            status_code = HTTPStatus.UNAUTHORIZED,
-            detail = "Incorrect username or password",
-            headers = {"WWW-Authenticate": "Bearer"},
+        raise get_http_exc_with_detail(
+            HTTPStatus.UNAUTHORIZED,
+            "Incorrect username or password"
         )
 
     access_token = create_access_token(

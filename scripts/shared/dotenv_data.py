@@ -20,6 +20,9 @@ class AllowedEnvKey(Enum):
     ALLOW_METHODS = "ALLOW_METHODS"
     ALLOW_HEADERS = "ALLOW_HEADERS"
 
+    # 2f
+    WEBHOOKS_2F_URL = "WEBHOOKS_2F_URL"
+
     ENV_FILE_PATH = "ENV_FILE_PATH" # this must be provided by the runner
 
 def get_env_data(env_key: AllowedEnvKey) -> Any:

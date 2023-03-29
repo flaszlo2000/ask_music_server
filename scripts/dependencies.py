@@ -12,7 +12,9 @@ from scripts.shared.security import get_payload_from_token
 oauth2_scheme = OAuth2PasswordBearer(
     tokenUrl = f"{__version__}/admin/token", scopes = {
         "user": "Normal user privilige, add records to current event",
-        "admin": "Admin priviliges"
+        "admin": "Admin priviliges",
+        "maintainer_2f": "Maintainer 2 factor auth page access",
+        "maintainer": "Handle admins"
     }
 )
 

@@ -37,11 +37,15 @@ def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta]
 def get_payload_from_token(token: str) -> Dict[str, Any]:
     return jwt.decode(token, __JWT_SECRET_KEY, algorithms = [__JWT_ALGORITHM])
 
-def is_admin_credentials_ok(username: str, password: str) -> bool:
+def is_admin_credentials_ok(username: str, password: str, *, maintainer: bool = False) -> bool:
     db_handler = global_db_handler()
 
     with db_handler.session() as session:
-        orm_inst = session.query(DBAdmins.password).filter(DBAdmins.username == username).first()
+        orm_inst = session \
+            .query(DBAdmins.password) \
+            .filter(DBAdmins.username == username) \
+            .filter(DBAdmins.is_maintainer == maintainer) \
+            .first()
 
         if orm_inst is None: return False
 

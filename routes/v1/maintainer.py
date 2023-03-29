@@ -15,7 +15,7 @@ from scripts.shared.security import (Token, create_access_token,
 from scripts.shared.twofactor import (CodeHandler, get_secure_code,
                                       send_code_over_2f)
 
-TWOFACTOR_EXPIRE_TIME_IN_MINS: Final[int] = 2
+TWOFACTOR_EXPIRE_TIME_IN_MINS: Final[int] = 3
 
 base_maintainer_router = APIRouter(prefix = "/maintainer", tags = ["maintainer"])
 twofactor_router = APIRouter(prefix = "/2f_auth", dependencies = [

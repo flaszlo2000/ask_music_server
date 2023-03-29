@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timedelta
 from typing import Final, Optional, Union
 
-CODE_EXPIRE_MINS: Final[int] = 1
+CODE_EXPIRE_MINS: Final[int] = 2
 
 @dataclass
 class Code:

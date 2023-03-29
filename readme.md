@@ -33,7 +33,7 @@ See more on fastapi docs.
 On real deploy, I recommend to use server.sh to start the service, but on dev run.sh was prefferred by me.
 
 ## This project features two-factor authentication
-It's been implemented via webhooks with the following process stream:
+It's been implemented via webhooks with the following process stream:  
 `/maintainer/token -> /maintainer/2f_auth/send_code -> /maintainer/2f_auth/login`  
 
 - `/maintainer/token`: normal oauth2 login that will grant an option (jwt with special scope) to send a two-factor code and login with it in a time limit

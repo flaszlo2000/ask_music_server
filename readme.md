@@ -7,7 +7,9 @@
 - send record request from admin to a event that is not ongoing
 - record blacklist
 - delete record
-- admin:admin for maintainer ?
+- admin:admin for maintainer at fist start ? or random generated that is print into log?
+- jwt renewal
+- db indexing ?
 
 
 # deploy

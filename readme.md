@@ -31,3 +31,14 @@ See more on fastapi docs.
 - `JWT_SECRET_KEY`: **very** secret key to encode JWT's
 
 On real deploy, I recommend to use server.sh to start the service, but on dev run.sh was prefferred by me.
+
+## This project features two-factor authentication
+It's been implemented via webhooks with the following process stream:
+`/maintainer/token -> /maintainer/2f_auth/send_code -> /maintainer/2f_auth/login`  
+
+- `/maintainer/token`: normal oauth2 login that will grant an option (jwt with special scope) to send a two-factor code and login with it in a time limit
+- `/maintainer/2f_auth/send_code`: with the special jwt, the webhook call can be fired here
+- `/maintainer/2f_auth/login`: waits for the special jwt and the two-factor code
+
+To be able to use this you have to provide an a variable called `WEBHOOKS_2F_URL` in your `.env` file for the first startup or manually add your link to the project's existing db at `app_config.twofactor_webhooks_url` field.  
+At startup the program will automatically lookup into the `.env` if the data is not present in the db, then if it finds it in there, will save it into the db.

@@ -1,12 +1,13 @@
 from datetime import timedelta
 from functools import lru_cache
 from http import HTTPStatus
-from typing import Final
+from typing import Final, List
 
 from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordRequestForm
 from requests.exceptions import ConnectionError
 
+from pydantic_models.admin import AdminModel, DetailedAdminConfigModel
 from scripts.dependencies import checked_token
 from scripts.shared.http_exc import get_http_exc_with_detail
 from scripts.shared.security import (Token, create_access_token,
@@ -14,6 +15,7 @@ from scripts.shared.security import (Token, create_access_token,
                                      is_admin_credentials_ok)
 from scripts.shared.twofactor import (CodeHandler, get_secure_code,
                                       send_code_over_2f)
+from scripts.v1.admin_handling import add_admin_to_db, get_all_admins
 
 TWOFACTOR_EXPIRE_TIME_IN_MINS: Final[int] = 3
 
@@ -107,28 +109,28 @@ async def login_with_2f_token(
     return Token(access_token = access_token)
 #endregion
 
-@maintainer_router.post("/admins/add")
-async def add_admin():
-    ...
+@base_maintainer_router.post("/admins/add")
+def add_admin(admin_credentials: DetailedAdminConfigModel):
+    add_admin_to_db(admin_credentials)
 
-@maintainer_router.get("/admins/get_all")
-async def get_admins():
-    ...
+@maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
+def get_admins():
+    return get_all_admins()
 
 @maintainer_router.get("/admins/get")
-async def get_particular_admin():
+def get_particular_admin():
     ...
 
 @maintainer_router.put("/admins/update")
-async def update_admin():
+def update_admin():
     ...
 
 @maintainer_router.delete("/admins/delete")
-async def delete_admin():
+def delete_admin():
     ...
 
 @maintainer_router.put("/change_webhook_url")
-async def change_webhook_url(new_webhook_url: str = Body(...)):
+def change_webhook_url(new_webhook_url: str = Body(...)):
     #! DANGER: if the webhook url gets changed here but the updated url gets removed from the db 
     #! in a way when no other left, then the url in the .env will be used again!
     #! This could be a security risk.

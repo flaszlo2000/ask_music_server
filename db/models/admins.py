@@ -1,3 +1,5 @@
+from typing import Optional, Union
+
 from sqlalchemy import Boolean, Column, Integer, String
 
 from db.models.base import Base, IDBModel
@@ -6,7 +8,25 @@ from db.models.base import Base, IDBModel
 class DBAdmins(IDBModel, Base):
     __tablename__ = "admins"
 
-    id = Column("id", Integer, primary_key = True, autoincrement = True)
-    username = Column("username", String, unique = True, nullable = False)
-    password = Column("password", String, nullable = False)
-    is_maintainer = Column("is_maintainer", Boolean, default = False)
+    id: Union[Column[int], int] = Column("id", Integer, primary_key = True, autoincrement = True)
+    username: Union[Column[str], str] = Column("username", String, unique = True, nullable = False)
+    password: Union[Column[str], str] = Column("password", String, nullable = False)
+    is_maintainer: Union[Column[bool], bool] = Column("is_maintainer", Boolean, default = False, nullable = False)
+
+    def __init__(
+        self,
+        username: str, 
+        password: str,
+        is_maintainer: bool = False,
+        id: Optional[int] = None
+    ) -> None:
+        super().__init__()
+        self.username = username
+        self.password = password
+        self.is_maintainer = is_maintainer
+
+        if id is not None:
+            self.id = id
+
+    def __str__(self) -> str:
+        return f"{self.id}:{self.username} - {self.is_maintainer=} -"

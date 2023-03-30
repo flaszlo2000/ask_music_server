@@ -109,7 +109,7 @@ async def login_with_2f_token(
     return Token(access_token = access_token)
 #endregion
 
-@base_maintainer_router.post("/admins/add")
+@maintainer_router.post("/admins/add")
 def add_admin(admin_credentials: DetailedAdminConfigModel):
     add_admin_to_db(admin_credentials)
 

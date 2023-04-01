@@ -6,8 +6,8 @@ from typing import Iterable
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from db.access_ensure import check_db_for_maintainer
 from db.main import DbHandler
-from db.maintainer import check_db_for_maintainer
 from db.singleton_handler import global_db_handler
 from routes import ROUTERS
 from scripts.shared.dotenv_data import (AllowedEnvKey, get_cors_conf,

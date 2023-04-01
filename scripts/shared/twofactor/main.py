@@ -1,4 +1,5 @@
 from http import HTTPStatus
+from typing import Dict, Optional
 
 import requests
 from fastapi import HTTPException
@@ -35,14 +36,26 @@ def get_webhooks_url(username: str) -> str:
 
         return str(admin_webhook_url)
 
-def send_code_over_2f(username: str, code: str) -> requests.Response:
+def send_msg(username: str, code: str, config: Optional[Dict[str, str]] = None) -> requests.Response:
+    config = dict() if config is None else config
+
     return requests.post(
         get_webhooks_url(username),
-        json = { "value1" : code }
+        json = {
+            **config,
+            "value1" : code
+        }
     )
 
+def send_code_over_2f(username: str, code: str) -> requests.Response:
+    return send_msg(username, code)
+
 def send_first_maintainer_pwd(username: str, pwd: str) -> requests.Response:
-    return send_code_over_2f(
+    return send_msg(
         username,
-        f"Maintainer added with: {pwd}. Please change this as fast as possible!"
+        "Maintainer automatically added!",
+        {
+            "value2": pwd,
+            "value3": "Please change this as fast as possible!"
+        }
     )

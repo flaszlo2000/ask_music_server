@@ -7,7 +7,6 @@
 - send record request from admin to a event that is not ongoing
 - record blacklist
 - delete record
-- admin:admin for maintainer at fist start ? or random generated that is print into log?
 - jwt renewal
 - db indexing ?
 
@@ -43,4 +42,6 @@ It's been implemented via webhooks with the following process stream:
 - `/maintainer/2f_auth/login`: waits for the special jwt and the two-factor code
 
 To be able to use this you have to provide an a variable called `INITIAL_WEBHOOKS_2F_URL` in your `.env` file for the first startup or manually add a maintainer admin record with `webhooks_url` field in the project's existing db. 
-At startup the program will automatically lookup into the `.env` if the data is not present in the db, then if it finds it in there, will save it into the db.
+At startup the program will automatically lookup into the `.env` if the data is not present in the db, then if it finds it in there, will save it for further use.
+
+When first started, and there is no maintainer level admin in the db (who could register anyone), the program is going to generate a random user and send it's password to the provided webhook url in the `.env`.

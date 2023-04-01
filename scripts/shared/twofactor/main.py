@@ -1,35 +1,43 @@
+from http import HTTPStatus
+
 import requests
-from sqlalchemy import desc
+from fastapi import HTTPException
 
-from db.models.app_config import DBAppConfig
+from db.models.admins import DBAdmins
 from db.singleton_handler import global_db_handler
-from scripts.shared.dotenv_data import AllowedEnvKey, get_env_data
-from scripts.shared.twofactor.code_handler import Code
+from scripts.shared.twofactor.code import Code
 
 
-def get_2f_url() -> str:
+def get_webhooks_url(username: str) -> str:
     "Fetches the url from the db, if its not present then looks up .env and saves it from there"
     db_handler = global_db_handler()
 
     with db_handler.session() as session:
-        last_config = session.query(DBAppConfig).order_by(desc(DBAppConfig.id)).first()
+        admin_webhook_url_result = session \
+            .query(DBAdmins.webhooks_url) \
+            .filter(DBAdmins.is_maintainer == True) \
+            .filter(DBAdmins.username == username) \
+            .first() 
 
-        if last_config is not None:
-            return str(last_config.twofactor_webhooks_url)
+        if admin_webhook_url_result is None:
+            # there is no record with the given name that is maintainer
+            raise HTTPException(
+                HTTPStatus.BAD_REQUEST,
+                "Incorrect credentials"
+            )
 
-        # no config yet
-        result_url = get_env_data(AllowedEnvKey.WEBHOOKS_2F_URL)
-        
-        session.add(
-            DBAppConfig(twofactor_webhooks_url = result_url)
-        )
+        admin_webhook_url = admin_webhook_url_result[0]
+        if admin_webhook_url is None:
+            # no webhooks url yet
+            raise HTTPException(
+                HTTPStatus.CONFLICT,
+                "Missing twofactor credential, contact owner"
+            )
 
-        session.commit()
-    
-    return result_url
-            
-def send_code_over_2f(code: Code) -> requests.Response:
+        return str(admin_webhook_url)
+
+def send_code_over_2f(username: str, code: Code) -> requests.Response:
     return requests.post(
-        get_2f_url(),
+        get_webhooks_url(username),
         json = { "value1" : str(code) }
     )

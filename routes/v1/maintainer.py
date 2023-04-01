@@ -20,10 +20,8 @@ from scripts.v1.admin_handling import add_admin_to_db, get_all_admins
 TWOFACTOR_EXPIRE_TIME_IN_MINS: Final[int] = 3
 
 base_maintainer_router = APIRouter(prefix = "/maintainer", tags = ["maintainer"])
-twofactor_router = APIRouter(prefix = "/2f_auth", dependencies = [
-        Security(checked_token, scopes = ["maintainer_2f"])
-    ]
-)
+twofactor_router = APIRouter(prefix = "/2f_auth") # NOTE: be aware, each of this endpoints must depend on `maintainer_2f`
+
 maintainer_router = APIRouter(dependencies = [
         Security(checked_token, scopes = ["maintainer"])
     ]
@@ -52,28 +50,6 @@ async def login_for_2f_token(form_data: OAuth2PasswordRequestForm = Depends()):
 
     return Token(access_token = access_token)
 
-@twofactor_router.post("/send_code")
-async def send_code(twofactor_code_handler: CodeHandler = Depends(get_2f_code_handler)):
-    "Sends out twofactor token via webhooks" # TODO: google authenticator ?
-    #! WARNING: at the first startup, env link will be used but then
-    #! it is going to be added to the db and env won't be checked again
-    secure_code = get_secure_code()
-    twofactor_code_handler.add(secure_code, "")
-
-    try:
-        response = send_code_over_2f(secure_code)
-        
-        if response.status_code != HTTPStatus.OK:
-            raise HTTPException(
-                HTTPStatus.CONFLICT,
-                "Unknown error during 2f notification sending"
-            )
-    except ConnectionError:
-        raise HTTPException(
-            HTTPStatus.INTERNAL_SERVER_ERROR,
-            "Connection outage"
-        )
-
 async def get_current_user_from_jwt(token: str = Security(checked_token, scopes = ["maintainer_2f"])) -> str:
     jwt_payload = get_payload_from_token(token)
     username = jwt_payload.get("sub")
@@ -86,6 +62,40 @@ async def get_current_user_from_jwt(token: str = Security(checked_token, scopes 
 
     return username
 
+@twofactor_router.post(
+    "/send_code",
+    responses = {
+        HTTPStatus.BAD_REQUEST: {"description": "No admin record in the db based on the given username that is a maintainer"},
+        HTTPStatus.CONFLICT: {"description": "Missing webhooks url"},
+        HTTPStatus.FAILED_DEPENDENCY: {"description": "Webhooks call returned with non 200 code"},
+        HTTPStatus.UNAUTHORIZED: {"description": "Jwt error"},
+        HTTPStatus.INTERNAL_SERVER_ERROR: {"description": "Cannot reach the given webhooks link"}
+    }
+)
+async def send_code(
+    twofactor_code_handler: CodeHandler = Depends(get_2f_code_handler),
+    current_user: str = Depends(get_current_user_from_jwt)
+):
+    "Sends out twofactor token via webhooks" # TODO: google authenticator ?
+    #! WARNING: at the first startup, env link will be used but then
+    #! it is going to be added to the db and env won't be checked again
+    secure_code = get_secure_code()
+    twofactor_code_handler.add(current_user, secure_code)
+
+    try:
+        response = send_code_over_2f(current_user, secure_code)
+        
+        if response.status_code != HTTPStatus.OK:
+            raise HTTPException(
+                HTTPStatus.FAILED_DEPENDENCY,
+                "Unknown error during 2f notification sending"
+            )
+    except ConnectionError:
+        raise HTTPException(
+            HTTPStatus.INTERNAL_SERVER_ERROR,
+            "Connection outage"
+        )
+
 @twofactor_router.post("/login", response_model = Token) 
 async def login_with_2f_token(
     twofactor_token: str = Body(...),
@@ -93,7 +103,7 @@ async def login_with_2f_token(
     current_user: str = Depends(get_current_user_from_jwt)
 ):
     "Accepts twofactor token from user and compares it to the saved one"
-    if not twofactor_code_handler.checkIfCodeIsCorrect(twofactor_token):
+    if not twofactor_code_handler.checkIf2FCodeIsCorrect(current_user, twofactor_token):
         raise get_http_exc_with_detail(
             HTTPStatus.UNAUTHORIZED,
             "Incorrect credential"
@@ -130,7 +140,7 @@ def delete_admin():
     ...
 
 @maintainer_router.put("/change_webhook_url")
-def change_webhook_url(new_webhook_url: str = Body(...)):
+def change_webhook_url(username: str = Body(...), new_webhook_url: str = Body(...)):
     #! DANGER: if the webhook url gets changed here but the updated url gets removed from the db 
     #! in a way when no other left, then the url in the .env will be used again!
     #! This could be a security risk.

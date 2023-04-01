@@ -42,5 +42,5 @@ It's been implemented via webhooks with the following process stream:
 - `/maintainer/2f_auth/send_code`: with the special jwt, the webhook call can be fired here
 - `/maintainer/2f_auth/login`: waits for the special jwt and the two-factor code
 
-To be able to use this you have to provide an a variable called `WEBHOOKS_2F_URL` in your `.env` file for the first startup or manually add your link to the project's existing db at `app_config.twofactor_webhooks_url` field.  
+To be able to use this you have to provide an a variable called `INITIAL_WEBHOOKS_2F_URL` in your `.env` file for the first startup or manually add a maintainer admin record with `webhooks_url` field in the project's existing db. 
 At startup the program will automatically lookup into the `.env` if the data is not present in the db, then if it finds it in there, will save it into the db.

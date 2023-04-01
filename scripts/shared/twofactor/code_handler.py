@@ -1,44 +1,33 @@
-from dataclasses import dataclass, field
-from datetime import datetime, timedelta
-from typing import Final, Optional, Union
+from typing import Dict, Optional, Union
 
-CODE_EXPIRE_MINS: Final[int] = 2
+from typing_extensions import overload
 
-@dataclass
-class Code:
-    code: str
-    __expire_at: datetime = field(init = False)
+from scripts.shared.twofactor.code import Code
 
-    def __post_init__(self) -> None:
-        self.__expire_at = datetime.now() + timedelta(minutes = CODE_EXPIRE_MINS)
-
-    def isExpired(self) -> bool:
-        return datetime.now() > self.__expire_at
-
-    def __str__(self) -> str:
-        return self.code
-
-    def __eq__(self, __o: object) -> bool:
-        if not isinstance(__o, Code) and not isinstance(__o, str): return False
-
-        return self.code == str(__o)
-
-    def __ne__(self, __o: object) -> bool:
-        if not isinstance(__o, Code) and not isinstance(__o, str): return True
-        
-        return self.code != str(__o)
 
 class CodeHandler:
-    def __init__(self, code: Optional[Code] = None, username: Optional[str] = None) -> None:
-        self.__code = code
-        self.username = username
+    @overload
+    def __init__(self, username: str, code: Code) -> None:...
+    @overload
+    def __init__(self, username: None = None, code: None = None) -> None:...
+    def __init__(self, username: Optional[str] = None, code: Optional[Code] = None) -> None:
+        self.__content: Dict[str, Code] = dict()
 
-    def checkIfCodeIsCorrect(self, given_code: Union[Code, str]) -> bool:
-        if self.__code is None or self.__code.isExpired():
+        if username is not None and code is not None:
+            self.add(username, code)
+        elif any([username, code]):
+            raise AttributeError("Either both parameters are required or None")
+
+    def checkIf2FCodeIsCorrect(self, username: str, given_code: Union[Code, str]) -> bool:
+        saved_code = self.__content.get(username)
+
+        if saved_code is None or saved_code.isExpired():
             return False
 
-        return self.__code == given_code
+        return saved_code == str(given_code)
 
-    def add(self, code: Code, username: str) -> None:
-        self.__code = code
-        self.username = username
+    def add(self, username: str, code: Code) -> None:
+        self.__content[username] = code
+
+    def forget(self, username: str) -> None:
+        self.__content.pop(username)

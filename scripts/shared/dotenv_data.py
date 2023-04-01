@@ -21,7 +21,7 @@ class AllowedEnvKey(Enum):
     ALLOW_HEADERS = "ALLOW_HEADERS"
 
     # 2f
-    WEBHOOKS_2F_URL = "WEBHOOKS_2F_URL"
+    INITIAL_WEBHOOKS_2F_URL = "INITIAL_WEBHOOKS_2F_URL"
 
     ENV_FILE_PATH = "ENV_FILE_PATH" # this must be provided by the runner
 

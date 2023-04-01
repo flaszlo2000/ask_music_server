@@ -36,7 +36,7 @@ def check_db_for_maintainer(db_handler: BaseDbHandler) -> None:
         SECURE_PWD: Final[str] = add_maintainer(session, BUILT_IN_MAINTAINER_USERNAME)
         session.commit()
     
-    print("[*] Maintainer level user was not found, added one to the db")
+    print("[*] WARNING: Maintainer level user was not found, added one to the db")
     
     send_first_maintainer_pwd(BUILT_IN_MAINTAINER_USERNAME, SECURE_PWD)
     # TODO: make log about this

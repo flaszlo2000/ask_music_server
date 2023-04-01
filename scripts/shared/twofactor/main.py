@@ -5,7 +5,6 @@ from fastapi import HTTPException
 
 from db.models.admins import DBAdmins
 from db.singleton_handler import global_db_handler
-from scripts.shared.twofactor.code import Code
 
 
 def get_webhooks_url(username: str) -> str:
@@ -36,8 +35,14 @@ def get_webhooks_url(username: str) -> str:
 
         return str(admin_webhook_url)
 
-def send_code_over_2f(username: str, code: Code) -> requests.Response:
+def send_code_over_2f(username: str, code: str) -> requests.Response:
     return requests.post(
         get_webhooks_url(username),
-        json = { "value1" : str(code) }
+        json = { "value1" : code }
+    )
+
+def send_first_maintainer_pwd(username: str, pwd: str) -> requests.Response:
+    return send_code_over_2f(
+        username,
+        f"Maintainer added with: {pwd}. Please change this as fast as possible!"
     )

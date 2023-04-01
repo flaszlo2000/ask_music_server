@@ -56,3 +56,6 @@ def is_admin_credentials_ok(username: str, password: str, *, maintainer: bool = 
         if orm_inst is None: return False
 
     return pwd_context.verify(password, orm_inst[0])
+
+def hash_pwd(data: str) -> str:
+    return pwd_context.hash(data) 

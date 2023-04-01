@@ -84,7 +84,7 @@ async def send_code(
     twofactor_code_handler.add(current_user, secure_code)
 
     try:
-        response = send_code_over_2f(current_user, secure_code)
+        response = send_code_over_2f(current_user, str(secure_code))
         
         if response.status_code != HTTPStatus.OK:
             raise HTTPException(

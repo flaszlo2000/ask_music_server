@@ -65,11 +65,11 @@ async def get_current_user_from_jwt(token: str = Security(checked_token, scopes 
 @twofactor_router.post(
     "/send_code",
     responses = {
-        HTTPStatus.BAD_REQUEST: {"description": "No admin record in the db based on the given username that is a maintainer"},
-        HTTPStatus.CONFLICT: {"description": "Missing webhooks url"},
-        HTTPStatus.FAILED_DEPENDENCY: {"description": "Webhooks call returned with non 200 code"},
-        HTTPStatus.UNAUTHORIZED: {"description": "Jwt error"},
-        HTTPStatus.INTERNAL_SERVER_ERROR: {"description": "Cannot reach the given webhooks link"}
+        int(HTTPStatus.BAD_REQUEST): {"description": "No admin record in the db based on the given username that is a maintainer"},
+        int(HTTPStatus.CONFLICT): {"description": "Missing webhooks url"},
+        int(HTTPStatus.FAILED_DEPENDENCY): {"description": "Webhooks call returned with non 200 code"},
+        int(HTTPStatus.UNAUTHORIZED): {"description": "Jwt error"},
+        int(HTTPStatus.INTERNAL_SERVER_ERROR): {"description": "Cannot reach the given webhooks link"}
     }
 )
 async def send_code(
@@ -109,6 +109,7 @@ async def login_with_2f_token(
             "Incorrect credential"
         )
 
+    twofactor_code_handler.forget(current_user)
     access_token = create_access_token(
         data = {
             "sub": current_user,

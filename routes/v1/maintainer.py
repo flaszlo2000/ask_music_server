@@ -7,7 +7,8 @@ from fastapi import APIRouter, Body, Depends, HTTPException, Security
 from fastapi.security import OAuth2PasswordRequestForm
 from requests.exceptions import ConnectionError
 
-from pydantic_models.admin import AdminModel, DetailedAdminConfigModel
+from pydantic_models.admin import (AdminModel, DetailedAdminModel,
+                                   FullAdminModel)
 from scripts.dependencies import checked_token
 from scripts.shared.http_exc import get_http_exc_with_detail
 from scripts.shared.security import (Token, create_access_token,
@@ -121,27 +122,23 @@ async def login_with_2f_token(
 #endregion
 
 @maintainer_router.post("/admins/add")
-def add_admin(admin_credentials: DetailedAdminConfigModel):
+def add_admin(admin_credentials: DetailedAdminModel):
     add_admin_to_db(admin_credentials)
 
 @maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
 def get_admins():
     return get_all_admins()
 
-@maintainer_router.get("/admins/get")
-def get_particular_admin():
-    ...
-
 @maintainer_router.put("/admins/update")
-def update_admin():
+def update_admin(updated_admin_model: FullAdminModel = Body(...)):
     ...
 
 @maintainer_router.delete("/admins/delete")
-def delete_admin():
+def delete_admin(admin_id: int = Body(...)):
     ...
 
 @maintainer_router.put("/change_webhook_url")
-def change_webhook_url(username: str = Body(...), new_webhook_url: str = Body(...)):
+def change_webhook_url(admin_id: int = Body(...), new_webhook_url: str = Body(...)):
     #! DANGER: if the webhook url gets changed here but the updated url gets removed from the db 
     #! in a way when no other left, then the url in the .env will be used again!
     #! This could be a security risk.

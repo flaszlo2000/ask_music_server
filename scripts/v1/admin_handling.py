@@ -5,7 +5,7 @@ from fastapi import HTTPException
 
 from db.models.admins import DBAdmins
 from db.singleton_handler import global_db_handler
-from pydantic_models.admin import AdminModel, DetailedAdminConfigModel
+from pydantic_models.admin import AdminModel, DetailedAdminModel
 from scripts.shared.security import pwd_context
 
 
@@ -23,7 +23,7 @@ def get_all_admins() -> List[AdminModel]:
     return result
 
 
-def add_admin_to_db(admin_credentials: DetailedAdminConfigModel) -> None:
+def add_admin_to_db(admin_credentials: DetailedAdminModel) -> None:
     "Adds an admin to the db with the original password additionally hashed"
     db_handler = global_db_handler()
 

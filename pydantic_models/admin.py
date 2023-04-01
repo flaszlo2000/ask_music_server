@@ -5,15 +5,23 @@ from pydantic_models.base import ResponseModel
 
 class AdminConfigModel(BaseModel):
     username: str
+    webhooks_url: str
     is_maintainer: bool = Field(default = False)
 
 class PasswordConfigModel(BaseModel):
     password: str
 
-class AdminModel(ResponseModel):
+# ResponseModel for classmethod to make it from 
+class AdminModel(AdminConfigModel, ResponseModel):
+    # OUT
+    # everything except password
     id: int
 
-# ResponseModel for classmethod to make it from 
-class DetailedAdminConfigModel(AdminConfigModel, PasswordConfigModel, ResponseModel):... # input from admin addition
+class DetailedAdminModel(AdminConfigModel, PasswordConfigModel):
+    # IN
+    # everything except id
+    ...
 
-class FullAdminConfigModel(AdminModel, PasswordConfigModel):... # update admin
+class FullAdminModel(AdminModel, PasswordConfigModel):
+    # IN
+    ...

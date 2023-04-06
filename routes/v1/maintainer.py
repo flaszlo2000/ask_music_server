@@ -9,14 +9,16 @@ from requests.exceptions import ConnectionError
 
 from pydantic_models.admin import (AdminModel, DetailedAdminModel,
                                    FullAdminModel)
+from routes.v1.dependencies import get_current_user_from_jwt, log_ip
 from scripts.dependencies import checked_token
 from scripts.shared.http_exc import get_http_exc_with_detail
 from scripts.shared.security import (Token, create_access_token,
-                                     get_payload_from_token,
                                      is_admin_credentials_ok)
 from scripts.shared.twofactor import (CodeHandler, get_secure_code,
                                       send_code_over_2f)
-from scripts.v1.admin_handling import add_admin_to_db, get_all_admins
+from scripts.v1.admin_handling import (add_admin_to_db, change_admin_in_db,
+                                       change_webhook_url_for,
+                                       delete_admin_from_db, get_all_admins)
 
 TWOFACTOR_EXPIRE_TIME_IN_MINS: Final[int] = 3
 
@@ -24,7 +26,8 @@ base_maintainer_router = APIRouter(prefix = "/maintainer", tags = ["maintainer"]
 twofactor_router = APIRouter(prefix = "/2f_auth") # NOTE: be aware, each of this endpoints must depend on `maintainer_2f`
 
 maintainer_router = APIRouter(dependencies = [
-        Security(checked_token, scopes = ["maintainer"])
+        Security(checked_token, scopes = ["maintainer"]),
+        Depends(log_ip)
     ]
 )
 
@@ -50,18 +53,6 @@ async def login_for_2f_token(form_data: OAuth2PasswordRequestForm = Depends()):
     )
 
     return Token(access_token = access_token)
-
-async def get_current_user_from_jwt(token: str = Security(checked_token, scopes = ["maintainer_2f"])) -> str:
-    jwt_payload = get_payload_from_token(token)
-    username = jwt_payload.get("sub")
-
-    if username is None:
-        raise get_http_exc_with_detail(
-            HTTPStatus.UNAUTHORIZED,
-            "Incorrect data"
-        )
-
-    return username
 
 @twofactor_router.post(
     "/send_code",
@@ -132,15 +123,15 @@ def get_admins():
 
 @maintainer_router.put("/admins/update")
 def update_admin(updated_admin_model: FullAdminModel = Body(...)):
-    ...
+    change_admin_in_db(updated_admin_model)
 
 @maintainer_router.delete("/admins/delete")
 def delete_admin(admin_id: int = Body(...)):
-    ...
+    delete_admin_from_db(admin_id)
 
 @maintainer_router.put("/change_webhook_url")
 def change_webhook_url(admin_id: int = Body(...), new_webhook_url: str = Body(...)):
-    #! DANGER: if the webhook url gets changed here but the updated url gets removed from the db 
-    #! in a way when no other left, then the url in the .env will be used again!
-    #! This could be a security risk.
-    ...
+    #! DANGER: only the first maintainer will inherit the url from .env, but if all maintainers gets deleted
+    #! for some reason, the .env  url will be used again by generating automatically a new maintainer!
+    #! This could lead to some interesting security risk.
+    change_webhook_url_for(admin_id, new_webhook_url)

@@ -106,7 +106,7 @@ async def login_with_2f_token(
     access_token = create_access_token(
         data = {
             "sub": current_user,
-            "scopes": ["user, admin, maintainer"]
+            "scopes": ["user", "admin", "maintainer"]
         }
     )
 

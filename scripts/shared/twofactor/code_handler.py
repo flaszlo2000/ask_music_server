@@ -19,9 +19,15 @@ class CodeHandler:
             raise AttributeError("Either both parameters are required or None")
 
     def checkIf2FCodeIsCorrect(self, username: str, given_code: Union[AuthCode, str]) -> bool:
-        saved_code = self.__content.get(username)
+        saved_code: Optional[AuthCode] = self.__content.get(username, None)
 
-        if saved_code is None or saved_code.isExpired():
+        if saved_code is None:
+            return False
+    
+        if saved_code.isExpired():
+            # TODO: log?
+            self.forget(username)
+
             return False
 
         return saved_code == str(given_code)

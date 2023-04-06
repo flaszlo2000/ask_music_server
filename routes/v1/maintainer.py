@@ -111,6 +111,7 @@ async def login_with_2f_token(
         )
 
     twofactor_code_handler.forget(current_user)
+
     access_token = create_access_token(
         data = {
             "sub": current_user,

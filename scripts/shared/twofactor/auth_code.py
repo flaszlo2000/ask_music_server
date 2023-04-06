@@ -9,17 +9,19 @@ CODE_EXPIRE_MINS: Final[int] = 2
 
 @dataclass
 class AuthCode:
-    code: str
+    code_in_ascii: str
     __expire_at: datetime = field(init = False)
 
     def __post_init__(self) -> None:
+        if not self.code_in_ascii.isascii(): raise ValueError("Code must be ascii")
+
         self.__expire_at = datetime.now() + timedelta(minutes = CODE_EXPIRE_MINS)
 
     def isExpired(self) -> bool:
         return datetime.now() > self.__expire_at
 
     def __str__(self) -> str:
-        return self.code
+        return self.code_in_ascii
 
     def __eq__(self, __o: object) -> bool:
         if not isinstance(__o, AuthCode) and not isinstance(__o, str): return False
@@ -29,7 +31,7 @@ class AuthCode:
             # compare_digest only accepts ascii chars
             return False
 
-        return compare_digest(self.code, input_pwd)
+        return compare_digest(self.code_in_ascii, input_pwd)
 
     def __ne__(self, __o: object) -> bool:
         return not self.__eq__(__o)

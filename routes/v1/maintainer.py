@@ -14,8 +14,8 @@ from scripts.dependencies import full_maintainer_checked_token
 from scripts.shared.http_exc import get_http_exc_with_detail
 from scripts.shared.security import (Token, create_access_token,
                                      is_admin_credentials_ok)
-from scripts.shared.twofactor import (CodeHandler, get_secure_code,
-                                      send_code_over_2f)
+from scripts.shared.security.twofactor import (CodeHandler, get_secure_code,
+                                               send_code_over_2f)
 from scripts.v1.admin_handling import (add_admin_to_db, change_admin_in_db,
                                        delete_admin_from_db, get_all_admins)
 

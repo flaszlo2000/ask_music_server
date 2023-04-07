@@ -2,7 +2,7 @@ from typing import Dict, Optional, Union
 
 from typing_extensions import overload
 
-from scripts.shared.twofactor.auth_code import AuthCode
+from scripts.shared.security.twofactor.auth_code import AuthCode
 
 
 class CodeHandler:

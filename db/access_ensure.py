@@ -6,8 +6,8 @@ from db.main import BaseDbHandler
 from db.models.admins import DBAdmins
 from scripts.shared.dotenv_data import AllowedEnvKey, get_env_data
 from scripts.shared.security import hash_pwd
-from scripts.shared.twofactor import get_secure_code
-from scripts.shared.twofactor.main import send_first_maintainer_pwd
+from scripts.shared.security.twofactor import get_secure_code
+from scripts.shared.security.twofactor.main import send_first_maintainer_pwd
 
 BUILT_IN_MAINTAINER_USERNAME: Final[str] = "admin"
 

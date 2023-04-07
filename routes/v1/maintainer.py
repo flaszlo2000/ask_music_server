@@ -124,7 +124,7 @@ def add_admin(admin_credentials: DetailedAdminModel):
 def get_admins():
     return get_all_admins()
 
-@base_maintainer_router.put("/admins/update")
+@base_maintainer_router.put("/admins/update") # TODO: responses
 def update_admin(updated_admin_model: FullAdminModel = Body(...)):
     old_model: FullAdminModel = change_admin_in_db(updated_admin_model)
 

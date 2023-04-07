@@ -5,10 +5,10 @@ from uuid import UUID
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 
-from db.models.base import IDBModel
+from db.models.base import Base
 from db.models.events import DBEvents
 
-T_INT_ID = TypeVar("T_INT_ID", bound = IDBModel)
+T_INT_ID = TypeVar("T_INT_ID", bound = Base)
 
 @overload
 def check_id_in_db(session: Session, db_model: Type[DBEvents], _id: UUID) -> DBEvents:...

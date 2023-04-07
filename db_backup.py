@@ -6,13 +6,13 @@ from sqlalchemy.orm import Session
 
 from db.main import DbHandler
 from db.models import *  # asterisk is fine here this is only for assure metadata is complete
-from db.models.base import Base, IDBModel
+from db.models.base import Base
 from scripts.shared.db_saver import fast_records, slow_records
 from scripts.shared.dotenv_data import (AllowedEnvKey, get_env_data,
                                         get_env_file_path)
 
 # I make this selectable via env variable
-DATA_BACKUP_STRATEGIES: Final[List[Callable[[Session, Table], Iterable[IDBModel]]]] = [
+DATA_BACKUP_STRATEGIES: Final[List[Callable[[Session, Table], Iterable[Base]]]] = [
     slow_records,
     fast_records
 ]

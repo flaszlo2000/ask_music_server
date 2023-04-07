@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, HttpUrl, validator
 
 from pydantic_models.base import ResponseModel
 from scripts.shared.security import hash_pwd
@@ -6,7 +6,7 @@ from scripts.shared.security import hash_pwd
 
 class AdminConfigModel(BaseModel):
     username: str
-    webhooks_url: str
+    webhooks_url: HttpUrl = Field(example = "https://test.test/abc")
     is_maintainer: bool = Field(default = False)
 
 class PasswordConfigModel(BaseModel):

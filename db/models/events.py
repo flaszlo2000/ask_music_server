@@ -5,10 +5,10 @@ from uuid import UUID
 from sqlalchemy import Boolean, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
-from db.models.base import Base, IDBModel
+from db.models.base import Base
 
 
-class DBEvents(Base, IDBModel):
+class DBEvents(Base):
     __tablename__: str = "events"
 
     id: Mapped[UUID] = mapped_column("id", Uuid, primary_key = True)

@@ -4,10 +4,10 @@ from uuid import UUID
 from sqlalchemy import Boolean, ForeignKey, Integer, String, Uuid
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from db.models.base import Base, IDBModel
+from db.models.base import Base
 
 
-class DBRecords(Base, IDBModel):
+class DBRecords(Base):
     __tablename__: str = "records"
 
     id: Mapped[int] = mapped_column("id", Integer, primary_key = True)

@@ -63,7 +63,10 @@ def get_admin_from_db_checked(
         )
 
     __check_admin_unique_values(session, updated_admin_model)
-    if not updated_admin_model.is_maintainer:
+    if updated_admin_model.is_maintainer:
+        # TODO: how should i the validate url?
+        pass
+    else:
         __check_if_at_least_one_maintainer_left(session, updated_admin_model.id)
 
     return admin_in_db
@@ -117,7 +120,7 @@ def change_admin_in_db(updated_admin_model: FullAdminModel) -> FullAdminModel:
     return old_admin_model # return the old model for loggin purposes
 
 def delete_admin_from_db(admin_id: int) -> None:
-    # TODO maybe twofactor ?
+    # TODO twofactor
     db_handler = global_db_handler()
 
     with db_handler.session() as session:
@@ -126,8 +129,3 @@ def delete_admin_from_db(admin_id: int) -> None:
 
         session.delete(admin_in_db)
         session.commit()
-
-def change_webhook_url_for(admin_id: int, new_webhook_url: str) -> bool:
-    # TODO: definitely two factor
-    # TODO: logs
-    ...

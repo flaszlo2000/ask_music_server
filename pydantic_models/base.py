@@ -2,13 +2,13 @@ from typing import Any, Dict
 
 from pydantic import BaseModel
 
-from db.models.base import IDBModel
+from db.models.base import Base
 
 
 class ResponseModel(BaseModel):
     "This is the parent of every response model"
     @classmethod
-    def convertFromOrm(cls, orm_obj: IDBModel):
+    def convertFromOrm(cls, orm_obj: Base):
         result: Dict[str, Any] = dict()
 
         for required_key in cls.__fields__:

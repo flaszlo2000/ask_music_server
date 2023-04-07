@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING, Optional
 from sqlalchemy import Boolean, Integer, String
 from sqlalchemy.orm import Mapped, mapped_column
 
-from db.models.base import Base, IDBModel
+from db.models.base import Base
 
 
-class DBAdmins(Base, IDBModel):
+class DBAdmins(Base):
     __tablename__ = "admins"
 
     id: Mapped[int] = mapped_column("id", Integer, primary_key = True, autoincrement = True)

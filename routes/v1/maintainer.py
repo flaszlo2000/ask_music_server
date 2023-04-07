@@ -17,7 +17,6 @@ from scripts.shared.security import (Token, create_access_token,
 from scripts.shared.twofactor import (CodeHandler, get_secure_code,
                                       send_code_over_2f)
 from scripts.v1.admin_handling import (add_admin_to_db, change_admin_in_db,
-                                       change_webhook_url_for,
                                        delete_admin_from_db, get_all_admins)
 
 TWOFACTOR_EXPIRE_TIME_IN_MINS: Final[int] = 3
@@ -118,7 +117,7 @@ def add_admin(admin_credentials: DetailedAdminModel):
     add_admin_to_db(admin_credentials)
 
     # TODO: log
-    print("*{admin_credentials.username}* has been added!")
+    print(f"*{admin_credentials.username}* has been added!")
 
 @maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
 def get_admins():
@@ -126,6 +125,9 @@ def get_admins():
 
 @maintainer_router.put("/admins/update") # TODO: responses
 def update_admin(updated_admin_model: FullAdminModel = Body(...)):
+    #! DANGER: only the first maintainer will inherit the url from .env, but if all maintainers gets deleted
+    #! for some reason, the .env  url will be used again by generating automatically a new maintainer!
+    #! This could lead to some interesting security risk.
     old_model: FullAdminModel = change_admin_in_db(updated_admin_model)
 
     # TODO: log
@@ -142,10 +144,3 @@ def delete_admin(admin_id: int = Body(...)):
 
     # TODO: log
     print(f"Admin [{admin_id}] has been deleted!")
-
-@maintainer_router.put("/change_webhook_url")
-def change_webhook_url(admin_id: int = Body(...), new_webhook_url: str = Body(...)):
-    #! DANGER: only the first maintainer will inherit the url from .env, but if all maintainers gets deleted
-    #! for some reason, the .env  url will be used again by generating automatically a new maintainer!
-    #! This could lead to some interesting security risk.
-    change_webhook_url_for(admin_id, new_webhook_url)

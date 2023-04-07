@@ -120,7 +120,7 @@ def add_admin(admin_credentials: DetailedAdminModel):
     # TODO: log
     print("*{admin_credentials.username}* has been added!")
 
-@base_maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
+@maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
 def get_admins():
     return get_all_admins()
 
@@ -136,7 +136,7 @@ def update_admin(updated_admin_model: FullAdminModel = Body(...)):
     # print("NEW:")
     # print(updated_admin_model)
 
-@base_maintainer_router.delete("/admins/delete")
+@maintainer_router.delete("/admins/delete")
 def delete_admin(admin_id: int = Body(...)):
     delete_admin_from_db(admin_id)
 

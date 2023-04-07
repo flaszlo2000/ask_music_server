@@ -119,7 +119,6 @@ def change_admin_in_db(updated_admin_model: FullAdminModel) -> FullAdminModel:
 
 def delete_admin_from_db(admin_id: int) -> None:
     # TODO maybe twofactor ?
-    # TODO: logs
     db_handler = global_db_handler()
 
     with db_handler.session() as session:

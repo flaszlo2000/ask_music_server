@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 from pydantic_models.base import ResponseModel
+from scripts.shared.security import hash_pwd
 
 
 class AdminConfigModel(BaseModel):
@@ -10,6 +11,11 @@ class AdminConfigModel(BaseModel):
 
 class PasswordConfigModel(BaseModel):
     password: str
+
+    @validator("password")
+    def encrypt(cls, v: str) -> str:
+        # Make sure we don't handle plain password anywhere
+        return hash_pwd(v)
 
 # ResponseModel for classmethod to make it from 
 class AdminModel(AdminConfigModel, ResponseModel):

@@ -21,5 +21,5 @@ async def get_current_user_from_jwt(token: str = Security(checked_token, scopes 
     return username
 
 async def log_ip(request: Request) -> None:
-    ...
+    ... # TODO
 #endregion

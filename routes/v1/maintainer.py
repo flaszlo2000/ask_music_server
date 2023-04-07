@@ -117,13 +117,24 @@ async def login_with_2f_token(
 def add_admin(admin_credentials: DetailedAdminModel):
     add_admin_to_db(admin_credentials)
 
-@maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
+    # TODO: log
+    print("*{admin_credentials.username}* has been added!")
+
+@base_maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
 def get_admins():
     return get_all_admins()
 
-@maintainer_router.put("/admins/update")
+@base_maintainer_router.put("/admins/update")
 def update_admin(updated_admin_model: FullAdminModel = Body(...)):
-    change_admin_in_db(updated_admin_model)
+    old_model: FullAdminModel = change_admin_in_db(updated_admin_model)
+
+    # TODO: log
+    print(f"*Admin with id: {updated_admin_model.id} has changed!*")
+    # FIXME filter sensitive information
+    # print("OLD:")
+    # print(old_model)
+    # print("NEW:")
+    # print(updated_admin_model)
 
 @maintainer_router.delete("/admins/delete")
 def delete_admin(admin_id: int = Body(...)):

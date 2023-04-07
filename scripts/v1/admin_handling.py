@@ -8,6 +8,7 @@ from db.models.admins import DBAdmins
 from db.singleton_handler import global_db_handler
 from pydantic_models.admin import (AdminModel, DetailedAdminModel,
                                    FullAdminModel)
+from scripts.shared.check_id_in_db import check_id_in_db
 from scripts.shared.security import hash_pwd
 
 
@@ -34,6 +35,8 @@ def add_admin_to_db(admin_credentials: DetailedAdminModel) -> None:
             .filter(DBAdmins.username == admin_credentials.username) \
             .first()
         
+        #! FIXME: check webhooks!!!!
+
         if record_with_the_same_name is not None:
             raise HTTPException(HTTPStatus.BAD_REQUEST, "Username taken")
 
@@ -114,10 +117,17 @@ def change_admin_in_db(updated_admin_model: FullAdminModel) -> FullAdminModel:
 
     return old_admin_model # return the old model for loggin purposes
 
-def delete_admin_from_db(admin_id: int) -> bool:
-    # maybe twofactor ?
+def delete_admin_from_db(admin_id: int) -> None:
+    # TODO maybe twofactor ?
     # TODO: logs
-    ...
+    db_handler = global_db_handler()
+
+    with db_handler.session() as session:
+        admin_in_db = check_id_in_db(session, DBAdmins, admin_id)
+        __check_if_at_least_one_maintainer_left(session, admin_id)
+
+        session.delete(admin_in_db)
+        session.commit()
 
 def change_webhook_url_for(admin_id: int, new_webhook_url: str) -> bool:
     # TODO: definitely two factor

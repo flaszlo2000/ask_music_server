@@ -120,7 +120,7 @@ def add_admin(admin_credentials: DetailedAdminModel):
     # TODO: log
     print("*{admin_credentials.username}* has been added!")
 
-@maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
+@base_maintainer_router.get("/admins/get_all", response_model = List[AdminModel])
 def get_admins():
     return get_all_admins()
 
@@ -136,9 +136,12 @@ def update_admin(updated_admin_model: FullAdminModel = Body(...)):
     # print("NEW:")
     # print(updated_admin_model)
 
-@maintainer_router.delete("/admins/delete")
+@base_maintainer_router.delete("/admins/delete")
 def delete_admin(admin_id: int = Body(...)):
     delete_admin_from_db(admin_id)
+
+    # TODO: log
+    print(f"Admin [{admin_id}] has been deleted!")
 
 @maintainer_router.put("/change_webhook_url")
 def change_webhook_url(admin_id: int = Body(...), new_webhook_url: str = Body(...)):

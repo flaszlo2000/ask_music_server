@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
+from typing import Any, Dict, Optional, Set
 
 from pydantic import BaseModel
 from sqlalchemy.orm import DeclarativeBaseNoMeta, Mapped
@@ -14,12 +14,7 @@ class Base(DeclarativeBaseNoMeta):
 
 class IDBModel(Protocol):
     __tablename__: str
-
     id: Mapped[Any]
-
-    if TYPE_CHECKING:
-        def __init__(self, *args: List[Any], **kwargs: Dict[str, Any]) -> None:
-            ...
 
     @classmethod
     def convertFromPydanticObject(

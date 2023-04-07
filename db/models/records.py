@@ -13,7 +13,7 @@ class DBRecords(Base, IDBModel):
     id: Mapped[int] = mapped_column("id", Integer, primary_key = True)
     f_event_id: Mapped[UUID] = mapped_column("f_event_id", Uuid, ForeignKey("events.id"))
     value: Mapped[str] = mapped_column("value", String, nullable = False)
-    done: Mapped[str] = mapped_column("done", Boolean, default = False)
+    done: Mapped[bool] = mapped_column("done", Boolean, default = False)
     # TODO: possible duration
 
     event_id = relationship("DBEvents")

@@ -1,4 +1,4 @@
-from typing import Callable, Final, Iterable, List
+from typing import Callable, Final, Iterable, List, Optional
 
 from dotenv import load_dotenv
 from sqlalchemy import MetaData, Table
@@ -21,7 +21,7 @@ def get_registered_tables(metadata: MetaData = Base.metadata) -> Iterable[Table]
     return metadata.sorted_tables
 
 def get_data_backup_strategy_index() -> int:
-    env_strategy_index: str = get_env_data(AllowedEnvKey.DB_BACKUP_STRATEGY)
+    env_strategy_index: Optional[str] = get_env_data(AllowedEnvKey.DB_BACKUP_STRATEGY)
     db_backup_strategy_env_name = AllowedEnvKey.DB_BACKUP_STRATEGY.value
 
     if env_strategy_index is None:

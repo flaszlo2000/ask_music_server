@@ -16,9 +16,9 @@ def check_id_in_db(session: Session, db_model: Type[DBEvents], _id: UUID) -> DBE
 def check_id_in_db(session: Session, db_model: Type[T_INT_ID], _id: int) -> T_INT_ID:...
 def check_id_in_db(
     session: Session,
-    db_model: Type[IDBModel],
+    db_model: Type[T_INT_ID],
     _id: Union[UUID, int]
-) -> IDBModel:
+) -> T_INT_ID:
     inst_in_db = session.query(db_model).filter(db_model.id == _id).first()
 
     if inst_in_db is None:

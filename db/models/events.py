@@ -8,7 +8,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from db.models.base import Base, IDBModel
 
 
-class DBEvents(IDBModel, Base):
+class DBEvents(Base, IDBModel):
     __tablename__: str = "events"
 
     id: Mapped[UUID] = mapped_column("id", Uuid, primary_key = True)

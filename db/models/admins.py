@@ -6,7 +6,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from db.models.base import Base, IDBModel
 
 
-class DBAdmins(IDBModel, Base):
+class DBAdmins(Base, IDBModel):
     __tablename__ = "admins"
 
     id: Mapped[int] = mapped_column("id", Integer, primary_key = True, autoincrement = True)

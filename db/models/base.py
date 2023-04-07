@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
 
 from pydantic import BaseModel
-from sqlalchemy.orm import DeclarativeBaseNoMeta
+from sqlalchemy.orm import DeclarativeBaseNoMeta, Mapped
 from typing_extensions import Protocol  # python3.7
 
 
@@ -11,7 +11,7 @@ class Base(DeclarativeBaseNoMeta):...
 class IDBModel(Protocol):
     __tablename__: str
 
-    id: Any
+    id: Mapped[Any]
 
     if TYPE_CHECKING:
         def __init__(self, *args: List[Any], **kwargs: Dict[str, Any]) -> None:

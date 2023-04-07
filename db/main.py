@@ -33,7 +33,7 @@ class DbHandler(BaseDbHandler):
         *,
         autoflush: bool = False,
         autocommit: bool = False
-    ) -> sessionmaker:
+    ) -> sessionmaker[Session]:
         return sessionmaker(bind = self.engine, autoflush = autoflush, autocommit = autocommit)
 
     @contextmanager

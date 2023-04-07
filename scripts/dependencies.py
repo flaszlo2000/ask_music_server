@@ -1,28 +1,27 @@
+from dataclasses import dataclass
 from http import HTTPStatus
 from typing import Any, Dict, Optional
 
 from fastapi import Depends, HTTPException
-from fastapi.security import OAuth2PasswordBearer, SecurityScopes
+from fastapi.security import SecurityScopes
 from jose.exceptions import JWTError
 
-from scripts import __version__
 from scripts.shared.http_exc import CONIFGS
 from scripts.shared.security import get_payload_from_token
+from scripts.shared.security.oauth_schemes import (
+    admin_oauth2_scheme, full_maintainer_oauth2_scheme,
+    twofactor_maintainer_oauth2_scheme, user_ouath2_scheme)
+from scripts.shared.security.permission_checks import (
+    check_admin_exist, check_maintainer_permission)
 
-oauth2_scheme = OAuth2PasswordBearer(
-    tokenUrl = f"{__version__}/admin/token", scopes = {
-        "user": "Normal user privilige, add records to current event",
-        "admin": "Admin priviliges",
-        "maintainer_2f": "Maintainer 2 factor auth page access",
-        "maintainer": "Handle admins"
-    }
-)
-# TODO: add multiple OAuth2PasswordBearer objects to separate scopes, via this, Swagger will work again
 
-async def checked_token(
-    security_scopes: SecurityScopes,
-    token: str = Depends(oauth2_scheme)
-) -> str:
+@dataclass
+class UsernameWithToken:
+    username: str
+    token: str
+
+
+async def token_checker(security_scopes: SecurityScopes, token: str) -> UsernameWithToken:
     credential_exc_conf: Dict[str, Any] = {
         **CONIFGS[HTTPStatus.UNAUTHORIZED],
         "detail": "Could not validate credentials",
@@ -45,4 +44,34 @@ async def checked_token(
         if scope not in token_scopes:
             raise HTTPException(**credential_exc_conf)
 
-    return token
+    return UsernameWithToken(username, token)
+
+async def user_checked_token():
+    ...
+
+async def admin_checked_token(
+    security_scopes: SecurityScopes,
+    token: str = Depends(admin_oauth2_scheme)
+) -> str:
+    username_with_token = await token_checker(security_scopes, token)
+    await check_admin_exist(username_with_token.username)
+
+    return username_with_token.token
+
+async def twofactor_maintainer_checked_token(
+    security_scopes: SecurityScopes,
+    token: str = Depends(twofactor_maintainer_oauth2_scheme)
+) -> str:
+    username_with_token = await token_checker(security_scopes, token)
+    await check_maintainer_permission(username_with_token.username)
+
+    return username_with_token.token
+
+async def full_maintainer_checked_token(
+    security_scopes: SecurityScopes,
+    token: str = Depends(full_maintainer_oauth2_scheme)
+) -> str:
+    username_with_token = await token_checker(security_scopes, token)
+    await check_maintainer_permission(username_with_token.username)
+
+    return username_with_token.token

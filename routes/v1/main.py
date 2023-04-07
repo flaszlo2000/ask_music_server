@@ -18,9 +18,9 @@ router = APIRouter()
 def get_ongoin_event():
     return active_event()
 
-@router.post("/event_login/{event_id}", response_model = Token)
+@router.post("/event_login", response_model = Token)
 def try_to_login_to_event(
-    event_id: UUID = Path(...),
+    event_id: UUID = Body(...),
     # user_random_id: str = Body(min_length = 6), # TODO: change this to startup generated access uuid4 token
     event_password: str = Body()
 ):

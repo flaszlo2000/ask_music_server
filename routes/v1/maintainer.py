@@ -10,7 +10,7 @@ from requests.exceptions import ConnectionError
 from pydantic_models.admin import (AdminModel, DetailedAdminModel,
                                    FullAdminModel)
 from routes.v1.dependencies import get_current_user_from_jwt, log_ip
-from scripts.dependencies import checked_token
+from scripts.dependencies import full_maintainer_checked_token
 from scripts.shared.http_exc import get_http_exc_with_detail
 from scripts.shared.security import (Token, create_access_token,
                                      is_admin_credentials_ok)
@@ -22,12 +22,12 @@ from scripts.v1.admin_handling import (add_admin_to_db, change_admin_in_db,
 TWOFACTOR_EXPIRE_TIME_IN_MINS: Final[int] = 3
 
 base_maintainer_router = APIRouter(prefix = "/maintainer", tags = ["maintainer"])
-twofactor_router = APIRouter(prefix = "/2f_auth") # NOTE: be aware, each of this endpoints must depend on `maintainer_2f`
+twofactor_router = APIRouter(prefix = "/2f_auth", tags = ["twofactor"]) # NOTE: be aware, each of this endpoints must depend on `maintainer_2f`
 
 maintainer_router = APIRouter(dependencies = [
-        Security(checked_token, scopes = ["maintainer"]),
+        Security(full_maintainer_checked_token, scopes = ["maintainer"]),
         Depends(log_ip)
-    ]
+    ],
 )
 
 #region twofactor login
@@ -126,7 +126,7 @@ def get_admins():
 @maintainer_router.put("/admins/update") # TODO: responses
 def update_admin(updated_admin_model: FullAdminModel = Body(...)):
     #! DANGER: only the first maintainer will inherit the url from .env, but if all maintainers gets deleted
-    #! for some reason, the .env  url will be used again by generating automatically a new maintainer!
+    #! for some reason, the .env url will be used again by generating automatically a new maintainer!
     #! This could lead to some interesting security risk.
     old_model: FullAdminModel = change_admin_in_db(updated_admin_model)
 

@@ -8,9 +8,7 @@ from jose.exceptions import JWTError
 
 from scripts.shared.http_exc import CONIFGS
 from scripts.shared.security import get_payload_from_token
-from scripts.shared.security.oauth_schemes import (
-    admin_oauth2_scheme, full_maintainer_oauth2_scheme,
-    twofactor_maintainer_oauth2_scheme, user_ouath2_scheme)
+from scripts.shared.security.oauth import oauth2_scheme
 from scripts.shared.security.permission_checks import (
     check_admin_exist, check_maintainer_permission)
 
@@ -46,12 +44,17 @@ async def token_checker(security_scopes: SecurityScopes, token: str) -> Username
 
     return UsernameWithToken(username, token)
 
-async def user_checked_token():
-    ...
+async def user_checked_token(
+    security_scopes: SecurityScopes,
+    token: str = Depends(oauth2_scheme)
+):
+    username_with_token = await token_checker(security_scopes, token)
+
+    return username_with_token.token
 
 async def admin_checked_token(
     security_scopes: SecurityScopes,
-    token: str = Depends(admin_oauth2_scheme)
+    token: str = Depends(oauth2_scheme)
 ) -> str:
     username_with_token = await token_checker(security_scopes, token)
     await check_admin_exist(username_with_token.username)
@@ -60,7 +63,7 @@ async def admin_checked_token(
 
 async def twofactor_maintainer_checked_token(
     security_scopes: SecurityScopes,
-    token: str = Depends(twofactor_maintainer_oauth2_scheme)
+    token: str = Depends(oauth2_scheme)
 ) -> str:
     username_with_token = await token_checker(security_scopes, token)
     await check_maintainer_permission(username_with_token.username)
@@ -69,7 +72,7 @@ async def twofactor_maintainer_checked_token(
 
 async def full_maintainer_checked_token(
     security_scopes: SecurityScopes,
-    token: str = Depends(full_maintainer_oauth2_scheme)
+    token: str = Depends(oauth2_scheme)
 ) -> str:
     username_with_token = await token_checker(security_scopes, token)
     await check_maintainer_permission(username_with_token.username)

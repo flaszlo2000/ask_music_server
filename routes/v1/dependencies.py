@@ -4,11 +4,13 @@ from fastapi import Request, Security
 
 from scripts.dependencies import twofactor_maintainer_checked_token
 from scripts.shared.http_exc import get_http_exc_with_detail
-from scripts.shared.security import get_payload_from_token
+from scripts.shared.security import Roles, get_payload_from_token
 
 
 #region maintainer
-async def get_current_user_from_jwt(token: str = Security(twofactor_maintainer_checked_token, scopes = ["maintainer_2f"])) -> str:
+async def get_current_user_from_jwt(
+    token: str = Security(twofactor_maintainer_checked_token, scopes = [Roles.MAINTAINER_2F])
+) -> str:
     jwt_payload = get_payload_from_token(token)
     username = jwt_payload.get("sub")
 

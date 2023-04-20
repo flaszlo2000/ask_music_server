@@ -32,8 +32,10 @@ class CodeHandler:
 
         return saved_code == str(given_code)
 
+    #region FIXME: make threadsafe
     def add(self, username: str, code: AuthCode) -> None:
         self.__content[username] = code
 
     def forget(self, username: str) -> None:
         self.__content.pop(username)
+    #endregion

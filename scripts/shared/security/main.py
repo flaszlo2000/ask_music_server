@@ -43,7 +43,7 @@ def is_admin_credentials_ok(username: str, password: str, *, maintainer: bool = 
     with db_handler.session() as session:
         orm_query = session \
             .query(DBAdmins.password) \
-            .filter(DBAdmins.username == username) \
+            .filter(DBAdmins.username == username)
         
         if maintainer:
             # at this way, when this filter is separated, the maintainer can login either at admin and maintainer

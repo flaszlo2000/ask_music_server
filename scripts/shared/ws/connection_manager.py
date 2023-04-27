@@ -44,5 +44,6 @@ class WSConnectionManager(IConnectionManager):
             )
 
     def stop_db_poll(self) -> None:
+        # FIXME: with gunicorn, do we reach this?
         assert self.db_watcher is not None
         self.db_watcher.stop()

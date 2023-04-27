@@ -5,25 +5,35 @@ from typing import Any, List
 
 
 class AllowedEnvKey(Enum):
+    #region .env
     DATABASE_URL = "DATABASE_URL"
-    DATABASE_BACKUP = "DATABASE_BACKUP" 
-    DB_BACKUP_STRATEGY = "DB_BACKUP_STRATEGY"
-
-    # JWT
-    JWT_SECRET_KEY = "JWT_SECRET_KEY"
-    JWT_ALGORITHM = "JWT_ALGORITHM"
-    JWT_EXPIRE_MINS = "JWT_EXPIRE_MINS"
-
+    DATABASE_BACKUP = "DATABASE_BACKUP"
+    
     # CORS
     ALLOW_ORIGINS = "ALLOW_ORIGINS"
     ALLOW_CREDENTIALS = "ALLOW_CREDENTIALS"
     ALLOW_METHODS = "ALLOW_METHODS"
     ALLOW_HEADERS = "ALLOW_HEADERS"
 
+    # JWT
+    JWT_ALGORITHM = "JWT_ALGORITHM"
+    JWT_EXPIRE_MINS = "JWT_EXPIRE_MINS"
+
     # 2f
     INITIAL_WEBHOOKS_2F_URL = "INITIAL_WEBHOOKS_2F_URL"
+    #endregion
 
+    #region runner
     ENV_FILE_PATH = "ENV_FILE_PATH" # this must be provided by the runner
+
+    JWT_SECRET_KEY = "JWT_SECRET_KEY" # FIXME: currently in runner
+    DB_BACKUP_STRATEGY = "DB_BACKUP_STRATEGY"
+
+    # setup
+    SERVICE_WORKERS = "SERVICE_WORKERS"
+    HOST = "HOST"
+    PORT = "PORT"
+    #endregion
 
 def get_env_data(env_key: AllowedEnvKey) -> Any:
     "Returns env data based on the provided key"

@@ -6,6 +6,7 @@ from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 
+from db.app_config import get_jwt_secret_key
 from db.models.admins import DBAdmins
 from db.singleton_handler import global_db_handler
 from scripts.shared.dotenv_data import (AllowedEnvKey, get_env_data,
@@ -13,7 +14,7 @@ from scripts.shared.dotenv_data import (AllowedEnvKey, get_env_data,
 
 load_dotenv(get_env_file_path())
 __DEFAULT_EXP_MINS: Final[int] = int(get_env_data(AllowedEnvKey.JWT_EXPIRE_MINS))
-__JWT_SECRET_KEY: Final[str] = get_env_data(AllowedEnvKey.JWT_SECRET_KEY)
+__JWT_SECRET_KEY: Final[str] = get_jwt_secret_key()
 __JWT_ALGORITHM: Final[str] = get_env_data(AllowedEnvKey.JWT_ALGORITHM)
 
 pwd_context = CryptContext(schemes = ["bcrypt"], deprecated = "auto")

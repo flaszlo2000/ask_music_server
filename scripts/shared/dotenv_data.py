@@ -25,8 +25,6 @@ class AllowedEnvKey(Enum):
 
     #region runner
     ENV_FILE_PATH = "ENV_FILE_PATH" # this must be provided by the runner
-
-    JWT_SECRET_KEY = "JWT_SECRET_KEY" # FIXME: currently in runner
     DB_BACKUP_STRATEGY = "DB_BACKUP_STRATEGY"
 
     # setup

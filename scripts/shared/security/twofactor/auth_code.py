@@ -43,3 +43,6 @@ def get_secure_code() -> AuthCode:
     uuid_segments = str(uuid4()).split('-')
 
     return AuthCode(uuid_segments[0] + choice(uuid_segments[1:-1]))
+
+def get_long_secure_str() -> str:
+    return "".join(str(uuid4()).split('-'))

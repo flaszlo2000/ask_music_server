@@ -9,6 +9,8 @@
 - delete record
 - jwt renewal
 - db indexing ?
+- HERE: update README
+- schedule jwt_key and session_key renewal!
 
 # deploy
 You will need these things: 

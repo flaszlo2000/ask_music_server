@@ -8,6 +8,7 @@ from gunicorn.app.base import BaseApplication
 from gunicorn.arbiter import Arbiter
 from starlette.applications import Starlette
 
+from db.access_ensure import db_setup_check
 from db.main import DbHandler
 from db.singleton_handler import global_db_handler
 from main import app
@@ -36,9 +37,10 @@ class ServerConfig:
         return f"{self.host}:{self.port}"
 
 def onStartup():
-    global_db_handler(
+    db_handler = global_db_handler(
         DbHandler(AllowedEnvKey.DATABASE_URL)
     )
+    db_setup_check(db_handler)
 
     init_db_polling()
 

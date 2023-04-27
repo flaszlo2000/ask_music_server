@@ -32,9 +32,8 @@ class DbHandler(BaseDbHandler):
         self,
         *,
         autoflush: bool = False,
-        autocommit: bool = False
-    ) -> sessionmaker:
-        return sessionmaker(bind = self.engine, autoflush = autoflush, autocommit = autocommit)
+    ) -> sessionmaker[Session]:
+        return sessionmaker(bind = self.engine, autoflush = autoflush)
 
     @contextmanager
     def session(self) -> Generator[Session, None, None]:

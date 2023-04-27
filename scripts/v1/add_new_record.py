@@ -24,5 +24,5 @@ def new_record(event_id: UUID, record_value: str, *, only_active: bool = True) -
         if event_in_db is None:
             raise HTTPException(HTTPStatus.BAD_REQUEST)
 
-        session.add(DBRecords(event_id, record_value))
+        session.add(DBRecords(f_event_id = event_id, value = record_value))
         session.commit()

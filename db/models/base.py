@@ -1,21 +1,15 @@
-from typing import TYPE_CHECKING, Any, Dict, List, Optional, Set
+from typing import Any, Dict, Optional, Set
 
 from pydantic import BaseModel
-from sqlalchemy.orm import DeclarativeBaseNoMeta
-from typing_extensions import Protocol  # python3.7
+from sqlalchemy.orm import DeclarativeBase, Mapped
 
 
-class Base(DeclarativeBaseNoMeta):...
+class Base(DeclarativeBase):
+    # NOTE: this must be the first class that a model inherits from.
+    # If this is avoided then model creation won't work.
+    # (l = Log(log = "test") but l's log field won't have any value!) 
 
-
-class IDBModel(Protocol):
-    __tablename__: str
-
-    id: Any
-
-    if TYPE_CHECKING:
-        def __init__(self, *args: List[Any], **kwargs: Dict[str, Any]) -> None:
-            ...
+    id: Mapped[Any]
 
     @classmethod
     def convertFromPydanticObject(

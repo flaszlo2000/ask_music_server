@@ -1,17 +1,13 @@
-from http import HTTPStatus
 from typing import List
 from uuid import UUID
 
-from fastapi import (APIRouter, Body, Depends, Path, Security, WebSocket,
+from fastapi import (APIRouter, Body, Path, Security, WebSocket,
                      WebSocketDisconnect)
-from fastapi.security import OAuth2PasswordRequestForm
 
 from pydantic_models.event import EventModelFullDetail, EventModelWithPassword
 from pydantic_models.record import RecordModel
-from scripts.dependencies import checked_token
-from scripts.shared.http_exc import get_http_exc_with_detail
-from scripts.shared.security import (Token, create_access_token,
-                                     is_admin_credentials_ok)
+from scripts.dependencies import admin_checked_token
+from scripts.shared.security import Roles
 from scripts.static import ws_connection_manager
 from scripts.v1.add_new_event import new_event
 from scripts.v1.config_event import config_event, config_event_state
@@ -22,28 +18,14 @@ from scripts.v1.get_event_details import (get_all_event,
                                           get_detailed_event)
 from scripts.v1.get_records import get_all_records
 
-base_admin_router = APIRouter(prefix = "/admin", tags = ["admin"])
+base_admin_router = APIRouter(prefix = "/admin", tags = [Roles.ADMIN])
 admin_router = APIRouter(dependencies = [
-        Security(checked_token, scopes = ["admin"])
+        # NOTE: if an admin gets deleted but it has valid admin jwt,
+        # it still won't be able to perform any admin actions anymore because each endpoint is
+        # protected with this.
+        Security(admin_checked_token, scopes = [Roles.ADMIN])
     ]
 )
-
-@base_admin_router.post("/token")
-async def login_for_admin_token(form_data: OAuth2PasswordRequestForm = Depends()):
-    if not is_admin_credentials_ok(form_data.username, form_data.password):
-        raise get_http_exc_with_detail(
-            HTTPStatus.UNAUTHORIZED,
-            "Incorrect username or password"
-        )
-
-    access_token = create_access_token(
-        data = {
-            "sub": form_data.username,
-            "scopes": ["user", "admin"]
-        }
-    )
-
-    return Token(access_token = access_token)
 
 @admin_router.post("/add_event")
 def add_event(event_data: EventModelWithPassword = Body(...)):

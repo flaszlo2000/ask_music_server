@@ -6,6 +6,7 @@ from typing import Iterable
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from db.access_ensure import check_db_for_maintainer
 from db.main import DbHandler
 from db.singleton_handler import global_db_handler
 from routes import ROUTERS
@@ -48,9 +49,11 @@ def init_db_polling() -> None:
 @app.on_event("startup")
 def startup() -> None:
     "Initializes the server startup requirements"
-    global_db_handler(
+    db_handler = global_db_handler(
         DbHandler(AllowedEnvKey.DATABASE_URL)
     )
+    check_db_for_maintainer(db_handler)
+
     include_routers()
     init_db_polling()
 

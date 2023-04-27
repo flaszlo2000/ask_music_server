@@ -1,3 +1,4 @@
+from scripts.shared.security.twofactor.code_handler import CodeHandler
 from scripts.shared.ws.connection_manager import WSConnectionManager
 
 #! NOTE: here I define static object that I want to share between multiple modules
@@ -5,3 +6,5 @@ from scripts.shared.ws.connection_manager import WSConnectionManager
 #region NOTE: lifecycle is handled at main.py and used to create ws connection in admin.py
 ws_connection_manager = WSConnectionManager() 
 #endregion
+
+code_handler = CodeHandler()

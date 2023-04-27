@@ -2,7 +2,7 @@
 set -euf -o pipefail
 
 export ENV_FILE_PATH=.env
-export SERVICE_WORKERS=4
+export SERVICE_WORKERS=1 # FIXME: race condition
 export DB_BACKUP_STRATEGY=0 # WARNING: this must be 0/1 bc it is used as index, see db_backup.py
 export JWT_SECRET_KEY=testsecretkey
 

@@ -20,6 +20,9 @@ from scripts.v1.get_records import get_all_records
 
 base_admin_router = APIRouter(prefix = "/admin", tags = [Roles.ADMIN])
 admin_router = APIRouter(dependencies = [
+        # NOTE: if an admin gets deleted but it has valid admin jwt,
+        # it still won't be able to perform any admin actions anymore because each endpoint is
+        # protected with this.
         Security(admin_checked_token, scopes = [Roles.ADMIN])
     ]
 )

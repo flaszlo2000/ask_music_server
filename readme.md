@@ -9,8 +9,6 @@
 - delete record
 - jwt renewal
 - db indexing ?
-- what if an admin gets deleted but it has good jwt
-- what if a maintainer has good jwt but it's maintainer privilige gets revoked ?
 
 # deploy
 You will need these things: 

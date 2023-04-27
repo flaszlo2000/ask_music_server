@@ -19,6 +19,8 @@ base_maintainer_router = APIRouter(prefix = "/maintainer", tags = [Roles.MAINTAI
 twofactor_router = APIRouter(prefix = "/2f_auth", tags = ["twofactor"]) # NOTE: be aware, each of this endpoints must depend on `maintainer_2f`
 
 maintainer_router = APIRouter(dependencies = [
+        # NOTE: if the maintainer role of an admin gets revoked but it has valid maintainer jwt
+        #  it's won't be able to perform maintainer actions because every endpoint is protected with this.
         Security(full_maintainer_checked_token, scopes = [Roles.MAINTAINER]),
         Depends(log_ip)
     ],

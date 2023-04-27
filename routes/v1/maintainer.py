@@ -46,7 +46,7 @@ async def send_code(current_user: str = Depends(get_current_user_from_jwt)):
 
     try:
         response = send_code_over_2f(current_user, str(secure_code))
-        
+
         if response.status_code != HTTPStatus.OK:
             raise HTTPException(
                 HTTPStatus.FAILED_DEPENDENCY,

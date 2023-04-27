@@ -9,7 +9,6 @@ from db.singleton_handler import global_db_handler
 from pydantic_models.admin import (AdminConfigModel, AdminModel,
                                    DetailedAdminModel, FullAdminModel)
 from scripts.shared.check_id_in_db import check_id_in_db
-from scripts.shared.security import hash_pwd
 
 
 #region DBAdmins checking utils
@@ -95,11 +94,7 @@ def add_admin_to_db(admin_credentials: DetailedAdminModel) -> None:
                 raise HTTPException(HTTPStatus.BAD_REQUEST, "Unique value violation")
 
         session.add(
-            DBAdmins.convertFromPydanticObject(
-                admin_credentials,
-                exclude = set("password"),
-                include = {"password": hash_pwd(admin_credentials.password)}
-            )
+            DBAdmins.convertFromPydanticObject(admin_credentials)
         )
 
         session.commit()

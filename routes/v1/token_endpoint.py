@@ -32,19 +32,23 @@ async def token_endpoint(form_data: OAuth2PasswordRequestForm = Depends()):
             raise unauthorized_exc
 
         code_handler.forget(form_data.username)
+
+        _sub = form_data.username
         wanted_roles.extend((Roles.MAINTAINER, Roles.ADMIN, Roles.USER))
 
     elif Roles.MAINTAINER_2F in form_data.scopes:
         if not is_admin_credentials_ok(form_data.username, form_data.password, maintainer = True):
             raise unauthorized_exc
 
-        wanted_roles.append(Roles.MAINTAINER_2F)
+        _sub = form_data.username
         _expires_delta = timedelta(minutes = TWOFACTOR_EXPIRE_TIME_IN_MINS)
+        wanted_roles.append(Roles.MAINTAINER_2F)
 
     elif Roles.ADMIN in form_data.scopes:
         if not is_admin_credentials_ok(form_data.username, form_data.password):
             raise unauthorized_exc
 
+        _sub = form_data.username
         wanted_roles.extend((Roles.ADMIN, Roles.USER))
 
     elif Roles.USER in form_data.scopes:

@@ -11,7 +11,7 @@ from scripts.shared.security.twofactor import get_secure_code
 from scripts.shared.security.twofactor.auth_code import get_long_secure_str
 from scripts.shared.security.twofactor.main import send_first_maintainer_pwd
 
-BUILT_IN_MAINTAINER_USERNAME: Final[str] = "admin"
+BUILT_IN_MAINTAINER_USERNAME: Final[str] = "admin" #! FIXME: dont hardcode this
 
 def __add_maintainer(session: Session, maintainer_name: str) -> str:
     env_webhooks_url = get_env_data(AllowedEnvKey.INITIAL_WEBHOOKS_2F_URL)

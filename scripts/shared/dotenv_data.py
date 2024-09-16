@@ -26,11 +26,6 @@ class AllowedEnvKey(Enum):
     #region runner
     ENV_FILE_PATH = "ENV_FILE_PATH" # this must be provided by the runner
     DB_BACKUP_STRATEGY = "DB_BACKUP_STRATEGY"
-
-    # setup
-    SERVICE_WORKERS = "SERVICE_WORKERS"
-    HOST = "HOST"
-    PORT = "PORT"
     #endregion
 
 def get_env_data(env_key: AllowedEnvKey) -> Any:

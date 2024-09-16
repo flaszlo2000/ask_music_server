@@ -26,6 +26,7 @@ async def token_endpoint(form_data: OAuth2PasswordRequestForm = Depends()):
         "Incorrect credential"
     )
 
+    #! FIXME: refactor this
     if Roles.MAINTAINER in form_data.scopes:
         # form_data.password is the sent out twofactor code here
         if not code_handler.checkIf2FCodeIsCorrect(form_data.username, form_data.password):

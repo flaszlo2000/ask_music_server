@@ -1,3 +1,4 @@
 #!/bin/bash
+set -euf -o pipefail
 
-python3 ./server.py
+uvicorn main:app --workers $SERVICE_WORKERS --host $HOST --port $PORT

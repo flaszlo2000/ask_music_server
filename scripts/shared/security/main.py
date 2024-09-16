@@ -1,21 +1,14 @@
 from datetime import datetime, timedelta
-from typing import Any, Dict, Final, Optional
+from typing import Any, Dict, Optional
 
-from dotenv import load_dotenv
 from jose import jwt
 from passlib.context import CryptContext
 from pydantic import BaseModel, Field
 
-from db.app_config import get_jwt_secret_key
 from db.models.admins import DBAdmins
 from db.singleton_handler import global_db_handler
-from scripts.shared.dotenv_data import (AllowedEnvKey, get_env_data,
-                                        get_env_file_path)
-
-load_dotenv(get_env_file_path())
-__DEFAULT_EXP_MINS: Final[int] = int(get_env_data(AllowedEnvKey.JWT_EXPIRE_MINS))
-__JWT_SECRET_KEY: Final[str] = get_jwt_secret_key()
-__JWT_ALGORITHM: Final[str] = get_env_data(AllowedEnvKey.JWT_ALGORITHM)
+from scripts.shared.configs import (GlobalSecurityConfig, SecurityConfigNames,
+                                    SmartConfig)
 
 pwd_context = CryptContext(schemes = ["bcrypt"], deprecated = "auto")
 
@@ -24,19 +17,19 @@ class Token(BaseModel):
     access_token: str
     token_type: str = Field(default = "bearer")
 
-def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+def create_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None, *, config: SmartConfig[SecurityConfigNames] = GlobalSecurityConfig) -> str:
     to_encode = data.copy()
 
     if expires_delta is None:
-        expires_delta = timedelta(minutes = __DEFAULT_EXP_MINS) 
+        expires_delta = timedelta(minutes = int(config[SecurityConfigNames.DEFAULT_EXP_MINS])) 
 
     to_encode.update({"exp": datetime.utcnow() + expires_delta})
-    encoded_jwt = jwt.encode(to_encode, __JWT_SECRET_KEY, algorithm = __JWT_ALGORITHM)
+    encoded_jwt = jwt.encode(to_encode, config[SecurityConfigNames.JWT_SECRET_KEY], algorithm = config[SecurityConfigNames.JWT_ALGORITHM])
 
     return encoded_jwt
 
-def get_payload_from_token(token: str) -> Dict[str, Any]:
-    return jwt.decode(token, __JWT_SECRET_KEY, algorithms = [__JWT_ALGORITHM])
+def get_payload_from_token(token: str, *, config: SmartConfig[SecurityConfigNames] = GlobalSecurityConfig) -> Dict[str, Any]:
+    return jwt.decode(token, config[SecurityConfigNames.JWT_SECRET_KEY], algorithms = [config[SecurityConfigNames.JWT_ALGORITHM]])
 
 def is_admin_credentials_ok(username: str, password: str, *, maintainer: bool = False) -> bool:
     db_handler = global_db_handler()

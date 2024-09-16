@@ -4,7 +4,7 @@ from db.models import DBAppConfig
 from db.singleton_handler import global_db_handler
 
 
-def get_jwt_secret_key() -> str:
+def get_jwt_secret_key_from_db() -> str:
     # TODO: log this
     db_handler = global_db_handler()
 
